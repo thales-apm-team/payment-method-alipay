@@ -1,36 +1,26 @@
 package com.payline.payment.alipay.service.impl;
 
-import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.service.LogoPaymentFormConfigurationService;
-import com.payline.pmapi.bean.common.FailureCause;
+import com.payline.payment.alipay.utils.i18n.I18nService;
+import com.payline.pmapi.bean.paymentform.bean.form.NoFieldForm;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.paymentform.response.configuration.PaymentFormConfigurationResponse;
-import com.payline.pmapi.bean.paymentform.response.configuration.impl.PaymentFormConfigurationResponseFailure;
-import com.payline.pmapi.logger.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.payline.pmapi.bean.paymentform.response.configuration.impl.PaymentFormConfigurationResponseSpecific;
 
 public class PaymentFormConfigurationServiceImpl extends LogoPaymentFormConfigurationService {
-
-    private static final Logger LOGGER = LogManager.getLogger(PaymentFormConfigurationServiceImpl.class);
-
+    private static final String NO_FIELD_TEXT = "form.button.text";
+    private static final String NO_FIELD_DESCRIPTION = "form.button.description";
+    private I18nService i18n = I18nService.getInstance();
     @Override
     public PaymentFormConfigurationResponse getPaymentFormConfiguration(PaymentFormConfigurationRequest paymentFormConfigurationRequest) {
         PaymentFormConfigurationResponse pfcResponse;
-        try {
-            pfcResponse = null; // TODO: replace by the real code
-        }
-        catch( PluginException e ){
-            pfcResponse = e.toPaymentFormConfigurationResponseFailureBuilder().build();
-        }
-        catch( RuntimeException e ){
-            LOGGER.error("Unexpected plugin error", e);
-            pfcResponse = PaymentFormConfigurationResponseFailure.PaymentFormConfigurationResponseFailureBuilder
-                    .aPaymentFormConfigurationResponseFailure()
-                    .withErrorCode( PluginException.runtimeErrorCode( e ) )
-                    .withFailureCause( FailureCause.INTERNAL_ERROR )
-                    .build();
-        }
-
-        return pfcResponse;
+        NoFieldForm noFieldForm = NoFieldForm.NoFieldFormBuilder.aNoFieldForm()
+                .withDisplayButton(true)
+                .withButtonText(i18n.getMessage(NO_FIELD_TEXT, paymentFormConfigurationRequest.getLocale()))
+                .withDescription(i18n.getMessage(NO_FIELD_DESCRIPTION, paymentFormConfigurationRequest.getLocale()))
+                .build();
+        return PaymentFormConfigurationResponseSpecific.PaymentFormConfigurationResponseSpecificBuilder.aPaymentFormConfigurationResponseSpecific()
+                .withPaymentForm(noFieldForm)
+                .build();
     }
 }

@@ -8,15 +8,20 @@ import com.payline.payment.alipay.utils.Constants;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.properties.ConfigProperties;
 import com.payline.pmapi.bean.common.FailureCause;
+import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.logger.LogManager;
+import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.Logger;
 
@@ -25,14 +30,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Signature;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 
 public class HttpClient {
@@ -44,6 +48,7 @@ public class HttpClient {
     // Exceptions messages
     private static final String SERVICE_URL_ERROR = "Service URL is invalid";
     private static final String SYNTAX_ENCODING = "Syntax Exception";
+    private static final String SIGNATURE_ENCODING = "Signature Exception";
     /**
      * The number of time the client must retry to send the request if it doesn't obtain a response.
      */
@@ -91,6 +96,12 @@ public class HttpClient {
     /**------------------------------------------------------------------------------------------------------------------*/
     private static class Holder {
         private static final HttpClient instance = new HttpClient();
+    }
+    private Header[] createHeaders() {
+        Header[] headers = new Header[2];
+        headers[0] = new BasicHeader("Content-Type", "application/json");
+        headers[1] = new BasicHeader("Accept", "application/json");
+        return headers;
     }
     /**------------------------------------------------------------------------------------------------------------------*/
     public static HttpClient getInstance() {
@@ -162,6 +173,52 @@ public class HttpClient {
 
         return alipayAPIResponse;
     }
+
+    /**
+     *
+     * @param requestConfiguration
+     * @return
+     */
+    public Response refund(RequestConfiguration requestConfiguration, RefundRequest refundRequest){
+        //Check if user is on Desktop or Mobile
+        String product_code;
+        if(PluginUtils.userIsOnPC)
+        {
+            product_code = "NEW_OVERSEAS_SELLER";
+        }
+        else
+        {
+            product_code = "NEW_WAP_OVERSEAS_SELLER";
+        }
+        // Create parameters
+        ArrayList<NameValuePair> params = new ArrayList<>();
+        params.add(new BasicNameValuePair("_input_charset", "utf-8"));
+        params.add(new BasicNameValuePair("currency", refundRequest.getAmount().getCurrency().toString()));
+        params.add(new BasicNameValuePair("gmt_return", new Date().toString()));
+        params.add(new BasicNameValuePair("is_sync", "Y"));
+        params.add(new BasicNameValuePair("out_return_no", refundRequest.getTransactionId()));
+        params.add(new BasicNameValuePair("out_trade_no", refundRequest.getTransactionId()));
+        params.add(new BasicNameValuePair("partner", refundRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.PARTNER_ID).getValue()));
+        params.add(new BasicNameValuePair("product_code", product_code));
+        params.add(new BasicNameValuePair("return_amount", refundRequest.getAmount().getAmountInSmallestUnit().toString()));
+        params.add(new BasicNameValuePair("service", "forex_refund"));
+
+        // Get the result of the request
+        StringResponse response = get(requestConfiguration, params);
+        Response alipayAPIResponse;
+        if(response.getStatusCode() == 200) {
+            alipayAPIResponse = Response.fromXml(response.getContent());
+        }
+        else
+        {
+            alipayAPIResponse = new Response();
+            alipayAPIResponse.setIs_success("F");
+            alipayAPIResponse.setError("404 Not Found");
+
+        }
+
+        return alipayAPIResponse;
+    }
     /**------------------------------------------------------------------------------------------------------------------*/
     /**
      * Verify API connection
@@ -194,6 +251,67 @@ public class HttpClient {
     }
     /**------------------------------------------------------------------------------------------------------------------*/
     /**
+     * Get params with sign
+     *
+     * @return
+     */
+    public List<NameValuePair> getParamsWithSign(List<NameValuePair> params, String charset){
+        try {
+            // Create the pre-signing string
+            String preSigning = preSigningString(params);
+
+            // Create the RSA2 signature
+            String sha256withRsa = signSHA256withRSA(preSigning);
+
+            // Add the signature to the parameters
+            params.add(new BasicNameValuePair("sign", URLEncoder.encode(sha256withRsa, charset)));
+            return params;
+        }
+        catch (Exception e)
+        {
+            throw new InvalidDataException(SIGNATURE_ENCODING, e);
+        }
+    }
+    /**------------------------------------------------------------------------------------------------------------------*/
+    /**
+     * Manage Post API call
+     *
+     * @param requestConfiguration
+     * @return
+     */
+    public StringResponse post(RequestConfiguration requestConfiguration, Header[] headers, List<NameValuePair> params) {
+        URI uri;
+        URI baseUrl;
+
+        // Check if API url is present
+        verifyPartnerConfigurationURL(requestConfiguration);
+
+        // Get the API URL
+        try {
+            baseUrl = new URI(requestConfiguration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.ALIPAY_URL));
+        } catch (URISyntaxException e) {
+            throw new InvalidDataException(SERVICE_URL_ERROR, e);
+        }
+
+        // Create the pre-signing string
+        String preSigning = preSigningString(params);
+
+        // Create the RSA2 signature
+        String sha256withRsa = signSHA256withRSA(preSigning);
+
+        // Add the signature to the parameters
+        params.add(new BasicNameValuePair("sign", sha256withRsa));
+
+        // Create the HttpGet request
+        HttpPost httpPost = new HttpPost(baseUrl);
+        httpPost.setEntity(new StringEntity(params.toString(), StandardCharsets.UTF_8));
+        httpPost.setHeaders(headers);
+
+        // Execute request
+        return this.execute(httpPost);
+    }
+    /**------------------------------------------------------------------------------------------------------------------*/
+    /**
      * Manage Post API call
      *
      * @param requestConfiguration
@@ -221,6 +339,7 @@ public class HttpClient {
 
         // Add the signature to the parameters
         params.add(new BasicNameValuePair("sign", sha256withRsa));
+        params.add(new BasicNameValuePair("sign_type", "RSA2"));
 
         // Create the HttpGet url with parameters
         try {
@@ -250,14 +369,32 @@ public class HttpClient {
         for (NameValuePair nameValuePair : params) {
 
             // The "sign_type" parameter is not used to generate the request signature
-            if (!nameValuePair.getName().equals("sign_type")) {
+            if (!nameValuePair.getName().equals("sign_type") && !nameValuePair.getName().equals("sign")) {
                 // Add the separator
                 if (!first) {
                     preSign.append("&");
                 }
-                // Add name and value
-                preSign.append(nameValuePair.getName() + "=" + nameValuePair.getValue());
+                if(nameValuePair.getValue().length() > 0 && !nameValuePair.getValue().equals(null) && !nameValuePair.getValue().equals("null")) {
+                    // Add name and value
+                    preSign.append(nameValuePair.getName() + "=" + nameValuePair.getValue());
+                }
             }
+            first = false;
+        }
+
+        return preSign.toString();
+    }
+    public static String preSigningString(Map<String, String> params) {
+        StringBuilder preSign = new StringBuilder();
+        boolean first = true;
+
+        // Build a string from parameters
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (!first) {
+                preSign.append("&");
+            }
+            // Add name and value
+            preSign.append(entry.getKey() + "=" + entry.getValue());
             first = false;
         }
 

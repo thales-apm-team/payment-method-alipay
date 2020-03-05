@@ -4,12 +4,11 @@ import com.payline.payment.alipay.utils.Constants;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
-import com.payline.pmapi.bean.payment.ContractConfiguration;
-import com.payline.pmapi.bean.payment.ContractProperty;
-import com.payline.pmapi.bean.payment.Environment;
-import com.payline.pmapi.bean.payment.Order;
+import com.payline.pmapi.bean.payment.*;
+import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormLogoRequest;
+import com.payline.pmapi.bean.refund.request.RefundRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -20,6 +19,8 @@ import java.util.*;
  * Utility class that generates mocks of frequently used objects.
  */
 public class MockUtils {
+    private static String TRANSACTIONID = "PAYLINE20200116103352";
+    private static String PARTNER_TRANSACTIONID = "098765432109876543210";
     /**
      * Generate a valid {@link Environment}.
      */
@@ -62,12 +63,17 @@ public class MockUtils {
     public static ContractConfiguration aContractConfiguration() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.INPUT_CHARSET, new ContractProperty("utf-8"));
         contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
-        contractProperties.put(Constants.ContractConfigurationKeys.SERVICE, new ContractProperty("single_trade_query"));
-        contractProperties.put(Constants.ContractConfigurationKeys.SIGN_TYPE, new ContractProperty("RSA2"));
-        contractProperties.put(Constants.ContractConfigurationKeys.TRANSACTION_ID, new ContractProperty("PAYLINE20200116105303"));
-        contractProperties.put(Constants.ContractConfigurationKeys.SIGN, new ContractProperty("TKV11jLM8tBAoFFiNT0LzX%2BX%2FYFZnMh4ZjQm4L0aQkxjyMPXFOmCD8hHtLxYN4reQXLC1Pe7vYz2GKFLv1oSVpxWrQ1Ww9so%2F5v7JUsAUcIQY7PqdQ5hHouOSdEw8lGYMjTcI0RZPUlmmWqPNEH2Fw80XR943r7IrQgDQ5kIOXm%2BFQJhvjwNr4o89KldjzRRya3wE3fozbTkBlgRMVqmlGlHFiQzCngkQudF5zijeF8zvSlHrfElYKEQLrv2CSpwFB1AlFA8FMkMHOIe2kJSl35LdqxnajRSRuccuUztioUHPtx5mfAKzWEvLit4tJKDHY54Cvt%2BzkDzh79U7Jnjyw%3D%3D"));
+        return new ContractConfiguration("Alipay", contractProperties);
+    }
+
+    /**
+     * Generate a valid {@link ContractConfiguration} to verify the connection to the API.
+     */
+    public static ContractConfiguration aContractConfigurationToPaymentService() {
+
+        Map<String, ContractProperty> contractProperties = new HashMap<>();
+        contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
 
         return new ContractConfiguration("Alipay", contractProperties);
     }
@@ -96,6 +102,111 @@ public class MockUtils {
                 .withEnvironment(anEnvironment())
                 .withPartnerConfiguration(aPartnerConfiguration())
                 .withLocale(Locale.getDefault())
+                .build();
+    }
+
+    /**
+     * Generate a valid {@link PaymentRequest}.
+     */
+    public static PaymentRequest aPaylinePaymentRequest() {
+        return aPaylinePaymentRequestBuilder().build();
+    }
+
+    /**
+     * Generate a builder for a valid {@link PaymentRequest}.
+     * This way, some attributes may be overridden to match specific test needs.
+     */
+    public static PaymentRequest.Builder aPaylinePaymentRequestBuilder() {
+        return PaymentRequest.builder()
+                .withAmount(aPaylineAmount())
+                .withBrowser(aBrowser())
+                .withBuyer(aBuyer())
+                .withCaptureNow(true)
+                .withContractConfiguration(aContractConfigurationToPaymentService())
+                .withEnvironment(anEnvironment())
+                .withLocale(Locale.getDefault())
+                .withOrder(aPaylineOrder())
+                .withPartnerConfiguration(aPartnerConfiguration())
+                .withPaymentFormContext(aPaymentFormContext())
+                .withSoftDescriptor("Test")
+                .withTransactionId(TRANSACTIONID);
+    }
+
+    /**
+     * Generate a valid {@link PaymentRequest}.
+     */
+    public static RefundRequest aPaylineRefundRequest() {
+        return aPaylineRefundRequestBuilder().build();
+    }
+
+    /**
+     * Generate a builder for a valid {@link RefundRequest}.
+     * This way, some attributes may be overridden to match specific test needs.
+     */
+    public static RefundRequest.RefundRequestBuilder aPaylineRefundRequestBuilder() {
+        return RefundRequest.RefundRequestBuilder.aRefundRequest()
+                .withAmount(aPaylineAmount())
+                .withBuyer(aBuyer())
+                .withContractConfiguration(aContractConfigurationToPaymentService())
+                .withEnvironment(anEnvironment())
+                .withPartnerTransactionId(TRANSACTIONID)
+                .withOrder(aPaylineOrder())
+                .withPartnerConfiguration(aPartnerConfiguration())
+                .withSoftDescriptor("Test")
+                .withTransactionId(TRANSACTIONID);
+    }
+
+    /**
+     * Generate a valid {@link PaymentRequest}.
+     */
+    public static RefundRequest anInvalidPaylineRefundRequest() {
+        return anInvalidPaylineRefundRequestBuilder().build();
+    }
+
+    /**
+     * Generate a builder for a valid {@link RefundRequest}.
+     * This way, some attributes may be overridden to match specific test needs.
+     */
+    public static RefundRequest.RefundRequestBuilder anInvalidPaylineRefundRequestBuilder() {
+        return RefundRequest.RefundRequestBuilder.aRefundRequest()
+                .withAmount(aPaylineAmount())
+                .withBuyer(aBuyer())
+                .withContractConfiguration(aContractConfigurationToPaymentService())
+                .withEnvironment(anEnvironment())
+                .withPartnerTransactionId(TRANSACTIONID)
+                .withOrder(aPaylineOrder())
+                .withPartnerConfiguration(aPartnerConfiguration())
+                .withSoftDescriptor("Test")
+                .withTransactionId("null");
+    }
+
+    /**
+     * Generate a valid {@link PaymentFormContext}.
+     */
+    public static PaymentFormContext aPaymentFormContext() {
+        Map<String, String> paymentFormParameter = new HashMap<>();
+
+        return PaymentFormContext.PaymentFormContextBuilder.aPaymentFormContext()
+                .withPaymentFormParameter(paymentFormParameter)
+                .withSensitivePaymentFormParameter(new HashMap<>())
+                .build();
+    }
+
+    /**
+     * @return a valid user agent.
+     */
+    public static String aUserAgent() {
+        return "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0";
+    }
+
+    /**
+     * Generate a valid {@link Browser}.
+     */
+    public static Browser aBrowser() {
+        return Browser.BrowserBuilder.aBrowser()
+                .withLocale(Locale.getDefault())
+                .withIp("192.168.0.1")
+                .withUserAgent(aUserAgent())
                 .build();
     }
     /**
@@ -162,7 +273,7 @@ public class MockUtils {
      * Generate a valid Payline Amount.
      */
     public static com.payline.pmapi.bean.common.Amount aPaylineAmount() {
-        return new com.payline.pmapi.bean.common.Amount(BigInteger.valueOf(1000), Currency.getInstance("EUR"));
+        return new com.payline.pmapi.bean.common.Amount(BigInteger.valueOf(10), Currency.getInstance("EUR"));
     }
     /**
      * Generate a valid {@link Buyer}.
