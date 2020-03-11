@@ -9,7 +9,9 @@ import org.apache.http.client.methods.HttpRequestBase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,7 +75,7 @@ public class PluginUtils {
     /**
      * Switch user device
      */
-    public static void SwitchDevice(PaymentServiceImpl payment, boolean isOnPC)
+    public static void SwitchDevice(boolean isOnPC)
     {
         PluginUtils.userIsOnPC = isOnPC;
     }
@@ -123,4 +125,14 @@ public class PluginUtils {
         }
     }
 
+    /**
+     * Convert an InputStream into a String
+     *
+     * @param stream the InputStream to convert
+     * @return the converted String encoded in UTF-8
+     */
+    public static String inputStreamToString(InputStream stream) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        return br.lines().collect(Collectors.joining(System.lineSeparator()));
+    }
 }

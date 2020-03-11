@@ -1,9 +1,11 @@
 package com.payline.payment.alipay;
 
 import com.payline.payment.alipay.utils.Constants;
+import com.payline.payment.alipay.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
+import com.payline.pmapi.bean.notification.request.NotificationRequest;
 import com.payline.pmapi.bean.payment.*;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.paymentform.request.PaymentFormConfigurationRequest;
@@ -11,7 +13,9 @@ import com.payline.pmapi.bean.paymentform.request.PaymentFormLogoRequest;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.mockito.internal.util.reflection.FieldSetter;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.*;
 
@@ -21,6 +25,82 @@ import java.util.*;
 public class MockUtils {
     private static String TRANSACTIONID = "PAYLINE20200116103352";
     private static String PARTNER_TRANSACTIONID = "098765432109876543210";
+    public static final StringResponse call()
+    {
+        StringResponse stringResponse = MockUtils.mockStringResponse(200
+                , "OK"
+                , "true"
+                , null);
+        return stringResponse;
+    }
+    public static String validNotificationBodyTemplate = "{" +
+            "\"currency\": \"USD\"," +
+            "\"notify_id\": \"1\","+
+            "\"out_trade_no\": \"PAYLINE20200116105303\"," +
+            "\"total_fee\": \"0.01\"," +
+            "\"trade_no\": \"PAYLINE20200116105303\"," +
+            "\"trade_status\": \"TRADE_STATUS\"," +
+            "\"sign\": \"signaturelulz\"," +
+            "\"sign_type\": \"RSA2\"}";
+    public static String invalidNotificationBodyTemplate = "{{" +
+            "\"currency\" \"USD\"," +
+            "\"notify_id\" \"1\","+
+            "\"out_trade_no\"\"PAYLINE20200116105303\"," +
+            "\"total_fee\" \"0.01\"," +
+            "\"trade_no\" \"PAYLINE20200116105303\"," +
+            "\"trade_status\"\"TRADE_STATUS\"," +
+            "\"sign\" \"signaturelulz\"," +
+            "\"sign_type\" \"RSA2\"}";
+    public static String invalidIdNotificationBodyTemplate = "{" +
+            "\"currency\": \"USD\"," +
+            "\"notify_id\": \"-1\","+
+            "\"out_trade_no\": \"PAYLINE20200116105303\"," +
+            "\"total_fee\": \"0.01\"," +
+            "\"trade_no\": \"PAYLINE20200116105303\"," +
+            "\"trade_status\": \"TRADE_STATUS\"," +
+            "\"sign\": \"signaturelulz\"," +
+            "\"sign_type\": \"RSA2\"}";
+    public static String transactionBodyPaid = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+            "<alipay>\n" +
+            "  <is_success>T</is_success>\n" +
+            "  <request>\n" +
+            "    <param name=\"out_trade_no\">PAYLINE20200116103332</param>\n" +
+            "    <param name=\"partner\">2088621926786355</param>\n" +
+            "    <param name=\"_input_charset\">utf-8</param>\n" +
+            "    <param name=\"service\">single_trade_query</param>\n" +
+            "  </request>\n" +
+            "  <response>\n" +
+            "    <trade>\n" +
+            "      <buyer_email>for***@alitest.com</buyer_email>\n" +
+            "      <buyer_id>2088622942481446</buyer_id>\n" +
+            "      <discount>0.00</discount>\n" +
+            "      <flag_trade_locked>0</flag_trade_locked>\n" +
+            "      <gmt_create>2020-02-27 21:46:41</gmt_create>\n" +
+            "      <gmt_last_modified_time>2020-02-27 21:46:47</gmt_last_modified_time>\n" +
+            "      <gmt_payment>2020-02-27 21:46:47</gmt_payment>\n" +
+            "      <is_total_fee_adjust>F</is_total_fee_adjust>\n" +
+            "      <operator_role>B</operator_role>\n" +
+            "      <out_trade_no>PAYLINE20200116103332</out_trade_no>\n" +
+            "      <payment_type>100</payment_type>\n" +
+            "      <price>73.82</price>\n" +
+            "      <quantity>1</quantity>\n" +
+            "      <seller_email>for***@alitest.com</seller_email>\n" +
+            "      <seller_id>2088621926786355</seller_id>\n" +
+            "      <subject>Test</subject>\n" +
+            "      <to_buyer_fee>0.00</to_buyer_fee>\n" +
+            "      <to_seller_fee>73.82</to_seller_fee>\n" +
+            "      <total_fee>73.82</total_fee>\n" +
+            "      <trade_no>2020022722001381441000086488</trade_no>\n" +
+            "      <trade_status>TRADE_FINISHED</trade_status>\n" +
+            "      <use_coupon>F</use_coupon>\n" +
+            "    </trade>\n" +
+            "  </response>\n" +
+            "  <sign>MiQ/9EHsh6qD1d9+jTpZKiJjCeYU1QlxTLBDlYLvfqfQFnr+uH/4gkfwkHrWgGCYxX+HEPXIJDQRhiQDvOS2jgq3xvxYBK/ZppJu3U79FwlJx1a1oQTqICnEalU1RBQPKdMXLj7qRb07stDBunmZEwcU1d1WQLZeogzx1f76dpu3ofjIPBoUxRiclnYCV7Jkrq4zo0yRD+hxW7VJ98iE8zII6AGVv4z+3v/m2hx71oDnJrj1w6aBuwcxotSba3azOdbzzZSHo3XBW0Gr1/yooM4zc73lcfdXgK75NYUVAgUeXo8YY3PnBHDBe4TRQkNmbKpNElOwOycVgp6FM2oj1A==</sign>\n" +
+            "  <sign_type>RSA2</sign_type>\n" +
+            "</alipay>";
+    public static String notificationBodyPaid = validNotificationBodyTemplate.replace("TRADE_STATUS", "TRADE_FINISHED");
+    public static String notificationBodyRefused = validNotificationBodyTemplate.replace("TRADE_STATUS", "TRADE_CLOSED");
+    public static String notificationBodyPaymentHold = validNotificationBodyTemplate.replace("TRADE_STATUS", "WAIT_BUYER_PAY");
     /**
      * Generate a valid {@link Environment}.
      */
@@ -43,13 +123,26 @@ public class MockUtils {
 
         return new PartnerConfiguration(partnerConfigurationMap, sensitiveConfigurationMap);
     }
+
+    /**
+     * Generate a MalformedURLException url {@link PartnerConfiguration}.
+     */
+    public static PartnerConfiguration aPartnerConfigurationMalformedURLException() {
+        Map<String, String> partnerConfigurationMap = new HashMap<>();
+
+        partnerConfigurationMap.put(Constants.PartnerConfigurationKeys.ALIPAY_URL, "htp:/");
+
+        Map<String, String> sensitiveConfigurationMap = new HashMap<>();
+
+        return new PartnerConfiguration(partnerConfigurationMap, sensitiveConfigurationMap);
+    }
     /**
      * Generate a valid {@link ContractConfiguration} to verify the connection to the API.
      */
     public static ContractConfiguration aContractConfigurationToVerifyConnection() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.INPUT_CHARSET, new ContractProperty("utf-8"));
+        contractProperties.put(Constants.ContractConfigurationKeys.INPUT_CHARSET, new ContractProperty("UTF-8"));
         contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
         contractProperties.put(Constants.ContractConfigurationKeys.SERVICE, new ContractProperty("single_trade_query"));
         contractProperties.put(Constants.ContractConfigurationKeys.SIGN_TYPE, new ContractProperty("RSA2"));
@@ -57,24 +150,25 @@ public class MockUtils {
         contractProperties.put(Constants.ContractConfigurationKeys.SIGN, new ContractProperty("TKV11jLM8tBAoFFiNT0LzX%2BX%2FYFZnMh4ZjQm4L0aQkxjyMPXFOmCD8hHtLxYN4reQXLC1Pe7vYz2GKFLv1oSVpxWrQ1Ww9so%2F5v7JUsAUcIQY7PqdQ5hHouOSdEw8lGYMjTcI0RZPUlmmWqPNEH2Fw80XR943r7IrQgDQ5kIOXm%2BFQJhvjwNr4o89KldjzRRya3wE3fozbTkBlgRMVqmlGlHFiQzCngkQudF5zijeF8zvSlHrfElYKEQLrv2CSpwFB1AlFA8FMkMHOIe2kJSl35LdqxnajRSRuccuUztioUHPtx5mfAKzWEvLit4tJKDHY54Cvt%2BzkDzh79U7Jnjyw%3D%3D"));
 
         return new ContractConfiguration("Alipay", contractProperties);
-    }    /**
+    }
+    /**
      * Generate a valid {@link ContractConfiguration} to verify the connection to the API.
      */
     public static ContractConfiguration aContractConfiguration() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
+        contractProperties.put(Constants.ContractConfigurationKeys.INPUT_CHARSET, new ContractProperty("UTF-8"));
         contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
         return new ContractConfiguration("Alipay", contractProperties);
     }
-
     /**
-     * Generate a valid {@link ContractConfiguration} to verify the connection to the API.
+     * Generate an invalid {@link ContractConfiguration} with invalid charset to generate an Encoding exception
      */
-    public static ContractConfiguration aContractConfigurationToPaymentService() {
+    public static ContractConfiguration aContractConfigurationUnsupportedEncodingException() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
+        contractProperties.put(Constants.ContractConfigurationKeys.INPUT_CHARSET, new ContractProperty("zfzeqtg"));
         contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
-
         return new ContractConfiguration("Alipay", contractProperties);
     }
     /**
@@ -84,7 +178,7 @@ public class MockUtils {
         // Create parameters
         ArrayList<NameValuePair> params = new ArrayList<>();
 
-        params.add(new BasicNameValuePair("_input_charset", "utf-8"));
+        params.add(new BasicNameValuePair("_input_charset", "UTF-8"));
         params.add(new BasicNameValuePair("out_trade_no", "0"));
         params.add(new BasicNameValuePair("partner", "2088621926786355"));
         params.add(new BasicNameValuePair("service", "single_trade_query"));
@@ -106,6 +200,30 @@ public class MockUtils {
     }
 
     /**
+     * Generate a valid {@link com.payline.pmapi.bean.notification.request.NotificationRequest}.
+     */
+    public static NotificationRequest aPaylineNotificationRequest(String body) {
+        return aPaylineNotificationRequestBuilder(body).build();
+    }
+
+    /**
+     * Generate a builder for a valid {@link NotificationRequest}.
+     * This way, some attributes may be overridden to match specific test needs.
+     */
+    public static NotificationRequest.NotificationRequestBuilder aPaylineNotificationRequestBuilder(String body) {
+        return NotificationRequest.NotificationRequestBuilder
+                .aNotificationRequest()
+                .withContent(new ByteArrayInputStream(body.getBytes()))
+                .withHttpMethod("GET")
+                .withPathInfo("foo")
+                .withContractConfiguration(aContractConfiguration())
+                .withEnvironment(anEnvironment())
+                .withPartnerConfiguration(aPartnerConfiguration())
+                .withTransactionId(TRANSACTIONID)
+                .withHeaderInfos(new HashMap<>());
+    }
+
+    /**
      * Generate a valid {@link PaymentRequest}.
      */
     public static PaymentRequest aPaylinePaymentRequest() {
@@ -117,23 +235,24 @@ public class MockUtils {
      * This way, some attributes may be overridden to match specific test needs.
      */
     public static PaymentRequest.Builder aPaylinePaymentRequestBuilder() {
+        long randomTransactionId = (long) (Math.random() * 100000000000000L);
         return PaymentRequest.builder()
                 .withAmount(aPaylineAmount())
                 .withBrowser(aBrowser())
                 .withBuyer(aBuyer())
                 .withCaptureNow(true)
-                .withContractConfiguration(aContractConfigurationToPaymentService())
+                .withContractConfiguration(aContractConfiguration())
                 .withEnvironment(anEnvironment())
                 .withLocale(Locale.getDefault())
                 .withOrder(aPaylineOrder())
                 .withPartnerConfiguration(aPartnerConfiguration())
                 .withPaymentFormContext(aPaymentFormContext())
                 .withSoftDescriptor("Test")
-                .withTransactionId(TRANSACTIONID);
+                .withTransactionId("PAYLINE"+randomTransactionId);
     }
 
     /**
-     * Generate a valid {@link PaymentRequest}.
+     * Generate a valid {@link RefundRequest}.
      */
     public static RefundRequest aPaylineRefundRequest() {
         return aPaylineRefundRequestBuilder().build();
@@ -147,7 +266,7 @@ public class MockUtils {
         return RefundRequest.RefundRequestBuilder.aRefundRequest()
                 .withAmount(aPaylineAmount())
                 .withBuyer(aBuyer())
-                .withContractConfiguration(aContractConfigurationToPaymentService())
+                .withContractConfiguration(aContractConfiguration())
                 .withEnvironment(anEnvironment())
                 .withPartnerTransactionId(TRANSACTIONID)
                 .withOrder(aPaylineOrder())
@@ -171,7 +290,7 @@ public class MockUtils {
         return RefundRequest.RefundRequestBuilder.aRefundRequest()
                 .withAmount(aPaylineAmount())
                 .withBuyer(aBuyer())
-                .withContractConfiguration(aContractConfigurationToPaymentService())
+                .withContractConfiguration(aContractConfiguration())
                 .withEnvironment(anEnvironment())
                 .withPartnerTransactionId(TRANSACTIONID)
                 .withOrder(aPaylineOrder())
@@ -303,6 +422,60 @@ public class MockUtils {
                 .withItems(items)
                 .withReference("ORDER-REF-123456")
                 .build();
+    }
+
+    /**
+     * Generate parameters string for get request (tests only)
+     * @param params
+     * @return get request parameters string
+     */
+    public static String generateParametersString(Map<String, String> params) {
+        StringBuilder preSign = new StringBuilder();
+        boolean first = true;
+
+        // Build a string from parameters
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (!first) {
+                preSign.append("&");
+            }
+            // Add name and value
+            preSign.append(entry.getKey() + "=" + entry.getValue());
+            first = false;
+        }
+
+        return preSign.toString();
+    }
+    /**
+     * Moch a StringResponse with the given elements.
+     *
+     * @param statusCode    The HTTP status code (ex: 200, 403)
+     * @param statusMessage The HTTP status message (ex: "OK", "Forbidden")
+     * @param content       The response content as a string
+     * @param headers       The response headers
+     * @return A mocked StringResponse
+     */
+    public static StringResponse mockStringResponse(int statusCode, String statusMessage, String content, Map<String, String> headers) {
+        StringResponse response = new StringResponse();
+
+        try {
+            if (content != null && !content.isEmpty()) {
+                FieldSetter.setField(response, StringResponse.class.getDeclaredField("content"), content);
+            }
+            if (headers != null && headers.size() > 0) {
+                FieldSetter.setField(response, StringResponse.class.getDeclaredField("headers"), headers);
+            }
+            if (statusCode >= 100 && statusCode < 600) {
+                FieldSetter.setField(response, StringResponse.class.getDeclaredField("statusCode"), statusCode);
+            }
+            if (statusMessage != null && !statusMessage.isEmpty()) {
+                FieldSetter.setField(response, StringResponse.class.getDeclaredField("statusMessage"), statusMessage);
+            }
+        } catch (NoSuchFieldException e) {
+            // This would happen in a testing context: spare the exception throw, the test case will probably fail anyway
+            return null;
+        }
+
+        return response;
     }
 
 }

@@ -1,5 +1,5 @@
 import com.payline.payment.alipay.MockUtils;
-import com.payline.payment.alipay.bean.response.Response;
+import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.logger.LogManager;
@@ -14,7 +14,7 @@ class MainTester {
     /**------------------------------------------------------------------------------------------------------------------*/
     public static void main(String[] args) throws IOException {
         Boolean connectionStatus;
-        Response response;
+        AlipayAPIResponse alipayAPIResponse;
 
         try {
 
@@ -27,8 +27,8 @@ class MainTester {
 
             // Test : Single trade query
             requestConfiguration = new RequestConfiguration(MockUtils.aContractConfiguration(), MockUtils.anEnvironment(), MockUtils.aPartnerConfiguration());
-            response = HTTP_CLIENT.single_trade_query(requestConfiguration);
-            LOGGER.info("Api response : " + response.getIs_success());
+            //alipayAPIResponse = HTTP_CLIENT.getTransactionStatus(requestConfiguration);
+            //LOGGER.info("Api response : " + alipayAPIResponse.getIs_success());
 
 
         } catch (Exception e) {

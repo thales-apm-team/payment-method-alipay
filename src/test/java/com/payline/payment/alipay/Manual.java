@@ -1,6 +1,5 @@
 package com.payline.payment.alipay;
 
-
 import javax.xml.bind.DatatypeConverter;
 import java.io.FileInputStream;
 import java.io.IOException;

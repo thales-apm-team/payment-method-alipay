@@ -1,10 +1,8 @@
 package com.payline.payment.alipay.service.impl;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.MockUtils;
-import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.http.HttpClient;
-import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
-import com.payline.pmapi.bean.refund.response.RefundResponse;
+import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
 import com.payline.pmapi.bean.refund.response.impl.RefundResponseSuccess;
 import org.junit.jupiter.api.Assertions;
@@ -31,15 +29,20 @@ class RefundServiceImplTest {
     }
     @Test
     void refundRequestOK() {
-        //PluginUtils.SwitchDevice(service, true);
         RefundResponseSuccess response = (RefundResponseSuccess) service.refundRequest(MockUtils.aPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseSuccess.class, response.getClass());
     }
 
     @Test
     void refundRequestNotOK() {
-        //PluginUtils.SwitchDevice(service, true);
         RefundResponseFailure response = (RefundResponseFailure) service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
+        Assertions.assertEquals(RefundResponseFailure.class, response.getClass());
+    }
+
+    @Test
+    void refundRequestMalformedURLException() {
+        RefundRequest.RefundRequestBuilder aPaylineRefundRequest = MockUtils.aPaylineRefundRequestBuilder().withPartnerConfiguration(MockUtils.aPartnerConfigurationMalformedURLException());
+        RefundResponseFailure response = (RefundResponseFailure)service.refundRequest(aPaylineRefundRequest.build());
         Assertions.assertEquals(RefundResponseFailure.class, response.getClass());
     }
 }

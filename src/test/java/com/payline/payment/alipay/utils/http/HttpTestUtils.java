@@ -6,10 +6,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicStatusLine;
 import org.mockito.internal.util.reflection.FieldSetter;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 

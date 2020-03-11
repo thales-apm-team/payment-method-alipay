@@ -19,7 +19,6 @@ import org.mockito.Spy;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import static com.payline.payment.alipay.utils.http.HttpTestUtils.mockHttpResponse;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -173,7 +172,7 @@ class HttpClientTest {
 
         doReturn(response).when(httpClient).execute(any(HttpRequestBase.class));
 
-        assertNotNull(httpClient.single_trade_query(requestConfiguration));
+        //assertNotNull(httpClient.single_trade_query(requestConfiguration));
 
         verify(http, never()).execute(any(HttpRequestBase.class));
     }

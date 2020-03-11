@@ -3,7 +3,6 @@ package com.payline.payment.alipay.bean.configuration;
 import com.payline.payment.alipay.MockUtils;
 import com.payline.payment.alipay.exception.PluginException;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

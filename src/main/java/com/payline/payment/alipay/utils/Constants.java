@@ -12,8 +12,8 @@ public class Constants {
         public static final String INPUT_CHARSET = "INPUT_CHARSET";
         public static final String TRANSACTION_ID = "TRANSACTION_ID";
         public static final String PARTNER_ID = "PARTNER_ID";
-        public static final String SERVICE = "SERVICE";
         public static final String SIGN_TYPE = "SIGN_TYPE";
+        public static final String SERVICE = "SERVICE";
         public static final String SIGN = "SIGN";
 
         /* Static utility class : no need to instantiate it (Sonar bug fix) */
