@@ -9,12 +9,10 @@ public class Constants {
      * Keys for the entries in ContractConfiguration map.
      */
     public static class ContractConfigurationKeys {
-        public static final String INPUT_CHARSET = "INPUT_CHARSET";
-        public static final String TRANSACTION_ID = "TRANSACTION_ID";
         public static final String PARTNER_ID = "PARTNER_ID";
-        public static final String SIGN_TYPE = "SIGN_TYPE";
-        public static final String SERVICE = "SERVICE";
-        public static final String SIGN = "SIGN";
+        public static final String SUPPLIER = "SUPPLIER";
+        public static final String SECONDARY_MERCHANT_ID = "SECONDARY_MERCHANT_ID";
+        public static final String NOTIFY_URL = "NOTIFY_URL";
 
         /* Static utility class : no need to instantiate it (Sonar bug fix) */
         private ContractConfigurationKeys(){}
@@ -27,6 +25,8 @@ public class Constants {
 
 
         public static final String ALIPAY_URL = "ALIPAY_URL";
+        public static final String READ_TIMEOUT = "readTimeOut";
+        public static final String CONNECT_TIMEOUT = "connectTimeOut";
         /* Static utility class : no need to instantiate it (Sonar bug fix) */
         private PartnerConfigurationKeys(){}
     }

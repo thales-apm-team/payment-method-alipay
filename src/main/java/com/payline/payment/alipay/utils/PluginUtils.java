@@ -74,6 +74,7 @@ public class PluginUtils {
 
     /**
      * Switch user device
+     * This method allow to simulate a computer or a mobile (for testing services on mobile)
      */
     public static void SwitchDevice(boolean isOnPC)
     {
@@ -118,10 +119,8 @@ public class PluginUtils {
                 return FailureCause.COMMUNICATION_ERROR;
             case "SYSTEM_ERROR":
             case "404 Not Found":
-            case "XXXXXXXXXXXXX":
-                return FailureCause.PARTNER_UNKNOWN_ERROR;
             default:
-                return FailureCause.INTERNAL_ERROR;
+                return FailureCause.PARTNER_UNKNOWN_ERROR;
         }
     }
 
@@ -134,5 +133,15 @@ public class PluginUtils {
     public static String inputStreamToString(InputStream stream) {
         BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
         return br.lines().collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    /**
+     * Check if a String is null or empty
+     *
+     * @param value the String to check
+     * @return
+     */
+    public static boolean isEmpty(String value) {
+        return value == null || value.isEmpty();
     }
 }

@@ -7,13 +7,6 @@ import org.junit.jupiter.api.Test;
 public class ResponseTest {
     private Response response = new Response();
     @Test
-    void setXmlMapper() {
-        XmlMapper xmlMapper = new XmlMapper();
-        response.setXmlMapper(xmlMapper);
-        Assertions.assertEquals(xmlMapper, response.getXmlMapper());
-    }
-
-    @Test
     void setTrade() {
         Trade trade = new Trade();
         response.setTrade(trade);

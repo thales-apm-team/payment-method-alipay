@@ -3,6 +3,7 @@ package com.payline.payment.alipay.service.impl;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.Constants;
+import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.payment.alipay.utils.i18n.I18nService;
 import com.payline.payment.alipay.utils.properties.ReleaseProperties;
@@ -11,6 +12,7 @@ import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
 import com.payline.pmapi.bean.configuration.parameter.impl.InputParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 import com.payline.pmapi.service.ConfigurationService;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,22 +30,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public List<AbstractParameter> getParameters(Locale locale) {
         List<AbstractParameter> parameters = new ArrayList<>();
 
-        // INPUT_CHARSET
-        InputParameter inputCharset = new InputParameter();
-        inputCharset.setKey( Constants.ContractConfigurationKeys.INPUT_CHARSET );
-        inputCharset.setLabel( i18n.getMessage("contract.INPUT_CHARSET.label", locale) );
-        inputCharset.setDescription( i18n.getMessage("contract.INPUT_CHARSET.description", locale) );
-        inputCharset.setRequired( true );
-        parameters.add( inputCharset );
-
-        // TRANSACTION ID
-        InputParameter transactionId = new InputParameter();
-        transactionId.setKey( Constants.ContractConfigurationKeys.TRANSACTION_ID );
-        transactionId.setLabel( i18n.getMessage("contract.TRANSACTION_ID.label", locale) );
-        transactionId.setDescription( i18n.getMessage("contract.TRANSACTION_ID.description", locale) );
-        transactionId.setRequired( true );
-        parameters.add( transactionId );
-
         // PARTNER ID
         InputParameter partnerId = new InputParameter();
         partnerId.setKey( Constants.ContractConfigurationKeys.PARTNER_ID );
@@ -52,21 +38,29 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         partnerId.setRequired( true );
         parameters.add( partnerId );
 
-        // SERVICE
-        InputParameter service = new InputParameter();
-        service.setKey( Constants.ContractConfigurationKeys.SERVICE );
-        service.setLabel( i18n.getMessage("contract.SERVICE.label", locale) );
-        service.setDescription( i18n.getMessage("contract.SERVICE.description", locale) );
-        service.setRequired( true );
-        parameters.add( service );
+        // SUPPLIER
+        InputParameter supplier = new InputParameter();
+        supplier.setKey( Constants.ContractConfigurationKeys.SUPPLIER );
+        supplier.setLabel( i18n.getMessage("contract.SUPPLIER.label", locale) );
+        supplier.setDescription( i18n.getMessage("contract.SUPPLIER.description", locale) );
+        supplier.setRequired( true );
+        parameters.add( supplier );
 
-        // SIGN_TYPE
-        InputParameter signType = new InputParameter();
-        signType.setKey( Constants.ContractConfigurationKeys.SIGN_TYPE );
-        signType.setLabel( i18n.getMessage("contract.SIGN_TYPE.label", locale) );
-        signType.setDescription( i18n.getMessage("contract.SIGN_TYPE.description", locale) );
-        signType.setRequired( true );
-        parameters.add( signType );
+        // SECONDARY_MERCHANT_ID
+        InputParameter secondaryMerchantId = new InputParameter();
+        secondaryMerchantId.setKey( Constants.ContractConfigurationKeys.SECONDARY_MERCHANT_ID );
+        secondaryMerchantId.setLabel( i18n.getMessage("contract.SECONDARY_MERCHANT_ID.label", locale) );
+        secondaryMerchantId.setDescription( i18n.getMessage("contract.SECONDARY_MERCHANT_ID.description", locale) );
+        secondaryMerchantId.setRequired( true );
+        parameters.add( secondaryMerchantId );
+
+        // NOTIFY_URL
+        InputParameter notifyUrl = new InputParameter();
+        notifyUrl.setKey( Constants.ContractConfigurationKeys.NOTIFY_URL );
+        notifyUrl.setLabel( i18n.getMessage("contract.NOTIFY_URL.label", locale) );
+        notifyUrl.setDescription( i18n.getMessage("contract.NOTIFY_URL.description", locale) );
+        notifyUrl.setRequired( true );
+        parameters.add( notifyUrl );
 
         return parameters;
     }
@@ -80,7 +74,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         // check required fields
         for( AbstractParameter param : this.getParameters( locale ) ){
-            if( param.isRequired() && accountInfo.get( param.getKey() ) == null ){
+            if( param.isRequired() && PluginUtils.isEmpty(accountInfo.get( param.getKey()))){
                 String message = i18n.getMessage(I18N_CONTRACT_PREFIX + param.getKey() + ".requiredError", locale);
                 errors.put( param.getKey(), message );
             }
@@ -90,10 +84,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         RequestConfiguration requestConfiguration = RequestConfiguration.build( contractParametersCheckRequest );
 
 
-        // If type of the signature is missing, no need to go further, as it is required
-        String signType = Constants.ContractConfigurationKeys.SIGN_TYPE;
+        // If partner id is missing, no need to go further, as it is required
+        String partnerId = Constants.ContractConfigurationKeys.PARTNER_ID;
 
-        if( errors.containsKey(signType)){
+        if( !errors.isEmpty()){
             return errors;
         }
 
@@ -103,7 +97,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         catch( PluginException e ){
             // If an exception is thrown, it means that the client private key is wrong
-            errors.put( signType, e.getErrorCode() );
+            errors.put( partnerId, e.getErrorCode() );
+        }
+        catch(RuntimeException e)
+        {
+            errors.put( "RuntimeException", e.getMessage() );
         }
         return errors;
     }

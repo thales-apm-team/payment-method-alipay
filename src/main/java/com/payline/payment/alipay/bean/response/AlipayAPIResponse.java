@@ -20,16 +20,17 @@ public class AlipayAPIResponse {
     private String sign_type;
     private static XmlMapper xmlMapper = new XmlMapper();
 
-    public static XmlMapper getXmlMapper() {
-        return xmlMapper;
-    }
-
-    public static void setXmlMapper(XmlMapper xmlMapper) {
-        AlipayAPIResponse.xmlMapper = xmlMapper;
-    }
-
     public String getIs_success() {
         return is_success;
+    }
+
+    public boolean isSuccess()
+    {
+        if(getIs_success().equalsIgnoreCase("t"))
+        {
+            return true;
+        }
+        return false;
     }
 
     public void setIs_success(String is_success) {
@@ -38,26 +39,6 @@ public class AlipayAPIResponse {
 
     public Response getResponse() {
         return response;
-    }
-
-    public void setResponse(Response response) {
-        this.response = response;
-    }
-
-    public String getSign() {
-        return sign;
-    }
-
-    public void setSign(String sign) {
-        this.sign = sign;
-    }
-
-    public String getSign_type() {
-        return sign_type;
-    }
-
-    public void setSign_type(String sign_type) {
-        this.sign_type = sign_type;
     }
 
     public String getError()
@@ -74,7 +55,7 @@ public class AlipayAPIResponse {
         try {
             return xmlMapper.readValue(xml, AlipayAPIResponse.class);
         } catch (IOException e) {
-            throw new InvalidDataException("Unable to parse XML CheckStatusResponse", e);
+            throw new InvalidDataException("Unable to parse XML AlipayAPIResponse", e);
         }
     }
 }

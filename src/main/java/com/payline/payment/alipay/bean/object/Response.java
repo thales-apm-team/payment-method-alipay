@@ -6,21 +6,17 @@ import com.payline.payment.alipay.exception.InvalidDataException;
 import java.io.IOException;
 
 public class Response {
-    private static XmlMapper xmlMapper = new XmlMapper();
+    private final static XmlMapper xmlMapper = new XmlMapper();
     private Trade trade;
 
-    public static XmlMapper getXmlMapper() {
-        return xmlMapper;
-    }
-    public static void setXmlMapper(XmlMapper xmlMapper) {
-        Response.xmlMapper = xmlMapper;
-    }
     public Trade getTrade() {
         return trade;
     }
+
     public void setTrade(Trade trade) {
         this.trade = trade;
     }
+
     public static Response fromXml(String xml) {
         try {
             return xmlMapper.readValue(xml, Response.class);

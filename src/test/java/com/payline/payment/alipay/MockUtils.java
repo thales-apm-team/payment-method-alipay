@@ -118,6 +118,8 @@ public class MockUtils {
         Map<String, String> partnerConfigurationMap = new HashMap<>();
 
         partnerConfigurationMap.put(Constants.PartnerConfigurationKeys.ALIPAY_URL, "https://mapi.alipaydev.com/gateway.do");
+        partnerConfigurationMap.put(Constants.PartnerConfigurationKeys.READ_TIMEOUT, "3000");
+        partnerConfigurationMap.put(Constants.PartnerConfigurationKeys.CONNECT_TIMEOUT, "3000");
 
         Map<String, String> sensitiveConfigurationMap = new HashMap<>();
 
@@ -142,12 +144,7 @@ public class MockUtils {
     public static ContractConfiguration aContractConfigurationToVerifyConnection() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.INPUT_CHARSET, new ContractProperty("UTF-8"));
         contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
-        contractProperties.put(Constants.ContractConfigurationKeys.SERVICE, new ContractProperty("single_trade_query"));
-        contractProperties.put(Constants.ContractConfigurationKeys.SIGN_TYPE, new ContractProperty("RSA2"));
-        contractProperties.put(Constants.ContractConfigurationKeys.TRANSACTION_ID, new ContractProperty("0"));
-        contractProperties.put(Constants.ContractConfigurationKeys.SIGN, new ContractProperty("TKV11jLM8tBAoFFiNT0LzX%2BX%2FYFZnMh4ZjQm4L0aQkxjyMPXFOmCD8hHtLxYN4reQXLC1Pe7vYz2GKFLv1oSVpxWrQ1Ww9so%2F5v7JUsAUcIQY7PqdQ5hHouOSdEw8lGYMjTcI0RZPUlmmWqPNEH2Fw80XR943r7IrQgDQ5kIOXm%2BFQJhvjwNr4o89KldjzRRya3wE3fozbTkBlgRMVqmlGlHFiQzCngkQudF5zijeF8zvSlHrfElYKEQLrv2CSpwFB1AlFA8FMkMHOIe2kJSl35LdqxnajRSRuccuUztioUHPtx5mfAKzWEvLit4tJKDHY54Cvt%2BzkDzh79U7Jnjyw%3D%3D"));
 
         return new ContractConfiguration("Alipay", contractProperties);
     }
@@ -157,8 +154,8 @@ public class MockUtils {
     public static ContractConfiguration aContractConfiguration() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.INPUT_CHARSET, new ContractProperty("UTF-8"));
         contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
+        contractProperties.put(Constants.ContractConfigurationKeys.NOTIFY_URL, new ContractProperty("http://notification.com"));
         return new ContractConfiguration("Alipay", contractProperties);
     }
     /**
@@ -167,7 +164,6 @@ public class MockUtils {
     public static ContractConfiguration aContractConfigurationUnsupportedEncodingException() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.INPUT_CHARSET, new ContractProperty("zfzeqtg"));
         contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
         return new ContractConfiguration("Alipay", contractProperties);
     }

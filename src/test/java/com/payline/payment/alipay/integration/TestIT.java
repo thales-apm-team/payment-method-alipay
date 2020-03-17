@@ -57,15 +57,19 @@ public class TestIT extends AbstractPaymentIntegration {
         driver.manage().timeouts().implicitlyWait(100, TimeUnit.SECONDS);
         try
         {
+            System.out.println(partnerUrl+ "?" + MockUtils.generateParametersString(params));
             driver.get(partnerUrl+ "?" + MockUtils.generateParametersString(params));
             System.out.println(partnerUrl);
             System.out.println(driver.getPageSource());
 
             // todo faire passer ces valeur en parametre du lancement de l'appli (voir ce qui est fait sur equens)
-            WebDriverWait wait = new WebDriverWait(driver, 30000);
+            WebDriverWait wait = new WebDriverWait(driver, 3000);
             wait.until(ExpectedConditions.elementToBeClickable(By.name("loginId")));
-            driver.findElement(By.id("J_tLoginId")).sendKeys("test");
-            wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe("https://example.org/store/redirection")));
+            driver.findElement(By.id("J_tLoginId")).sendKeys("forex_126564@alitest.com");
+            driver.findElement(By.id("payPasswd_rsainput")).sendKeys("b111111");
+            //driver.findElement(By.id("J_newBtn")).click();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".ui-form-explain")));
+            driver.findElement(By.id("payPassword_rsainput")).sendKeys("b111111");
             /*driver.findElement(By.id(".CardNumber")).sendKeys("4111111111111111");
             driver.findElement(By.id(".ExpDate")).sendKeys("03/22");
             driver.findElement(By.id(".CardCvv")).sendKeys("123");

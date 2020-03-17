@@ -3,12 +3,14 @@ package com.payline.payment.alipay.bean.request;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.nio.charset.StandardCharsets;
+
 abstract class Request {
-    protected String _input_charset;
+    protected String _input_charset = StandardCharsets.UTF_8.toString();
     protected String out_trade_no;
     protected String partner;
     protected String service;
-    protected String sign_type;
+    protected String sign_type = "RSA2";
     protected String sign;
 
     public String get_input_charset() {

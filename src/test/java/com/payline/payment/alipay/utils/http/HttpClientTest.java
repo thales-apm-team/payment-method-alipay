@@ -99,26 +99,6 @@ class HttpClientTest {
     /**------------------------------------------------------------------------------------------------------------------*/
 
     @Test
-    void get_missingApiUrl() {
-        // given: the API base URL is missing from the partner configuration
-        RequestConfiguration requestConfiguration = new RequestConfiguration(MockUtils.aContractConfiguration(), MockUtils.anEnvironment(), new PartnerConfiguration(new HashMap<>(), new HashMap<>()));
-
-        // when calling the refund method, an exception is thrown
-        assertThrows(InvalidDataException.class, () -> httpClient.get(requestConfiguration,MockUtils.aValidParametersList()));
-    }
-    /**------------------------------------------------------------------------------------------------------------------*/
-
-    @Test
-    void get_invalidApiUrl() {
-        // given: the API base URL is missing from the partner configuration
-        RequestConfiguration requestConfiguration = new RequestConfiguration(MockUtils.aContractConfiguration(), MockUtils.anEnvironment(), anInvalidPartnerConfiguration());
-
-        // when calling the get method, an exception is thrown
-        assertThrows(InvalidDataException.class, () -> httpClient.get(requestConfiguration,MockUtils.aValidParametersList()));
-    }
-    /**------------------------------------------------------------------------------------------------------------------*/
-
-    @Test
     void verifyConnection_EmptyResponseContent() throws IOException {
         // given: the API base URL is missing from the partner configuration
         RequestConfiguration requestConfiguration = new RequestConfiguration(MockUtils.aContractConfigurationToVerifyConnection(), MockUtils.anEnvironment(), MockUtils.aPartnerConfiguration());
