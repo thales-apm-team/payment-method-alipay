@@ -144,7 +144,7 @@ public class MockUtils {
     public static ContractConfiguration aContractConfigurationToVerifyConnection() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
+        contractProperties.put(Constants.ContractConfigurationKeys.MERCHAND_PID, new ContractProperty("2088621926786355"));
 
         return new ContractConfiguration("Alipay", contractProperties);
     }
@@ -154,8 +154,8 @@ public class MockUtils {
     public static ContractConfiguration aContractConfiguration() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
-        contractProperties.put(Constants.ContractConfigurationKeys.NOTIFY_URL, new ContractProperty("http://notification.com"));
+        contractProperties.put(Constants.ContractConfigurationKeys.MERCHAND_PID, new ContractProperty("2088621926786355"));
+        contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_URL, new ContractProperty("http://notification.com"));
         return new ContractConfiguration("Alipay", contractProperties);
     }
     /**
@@ -164,7 +164,7 @@ public class MockUtils {
     public static ContractConfiguration aContractConfigurationUnsupportedEncodingException() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_ID, new ContractProperty("2088621926786355"));
+        contractProperties.put(Constants.ContractConfigurationKeys.MERCHAND_PID, new ContractProperty("2088621926786355"));
         return new ContractConfiguration("Alipay", contractProperties);
     }
     /**

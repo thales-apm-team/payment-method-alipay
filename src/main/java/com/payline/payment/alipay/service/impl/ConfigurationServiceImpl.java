@@ -32,7 +32,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
         // PARTNER ID
         InputParameter partnerId = new InputParameter();
-        partnerId.setKey( Constants.ContractConfigurationKeys.PARTNER_ID );
+        partnerId.setKey( Constants.ContractConfigurationKeys.MERCHAND_PID );
         partnerId.setLabel( i18n.getMessage("contract.PARTNER_ID.label", locale) );
         partnerId.setDescription( i18n.getMessage("contract.PARTNER_ID.description", locale) );
         partnerId.setRequired( true );
@@ -54,9 +54,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         secondaryMerchantId.setRequired( true );
         parameters.add( secondaryMerchantId );
 
-        // NOTIFY_URL
+        // PARTNER_URL
         InputParameter notifyUrl = new InputParameter();
-        notifyUrl.setKey( Constants.ContractConfigurationKeys.NOTIFY_URL );
+        notifyUrl.setKey( Constants.ContractConfigurationKeys.PARTNER_URL );
         notifyUrl.setLabel( i18n.getMessage("contract.NOTIFY_URL.label", locale) );
         notifyUrl.setDescription( i18n.getMessage("contract.NOTIFY_URL.description", locale) );
         notifyUrl.setRequired( true );
@@ -85,7 +85,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
 
         // If partner id is missing, no need to go further, as it is required
-        String partnerId = Constants.ContractConfigurationKeys.PARTNER_ID;
+        String partnerId = Constants.ContractConfigurationKeys.MERCHAND_PID;
 
         if( !errors.isEmpty()){
             return errors;

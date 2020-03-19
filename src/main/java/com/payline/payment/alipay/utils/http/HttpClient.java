@@ -9,6 +9,7 @@ import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.Constants;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.SignatureUtils;
+import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.http.NameValuePair;
@@ -21,6 +22,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -135,14 +137,22 @@ public class HttpClient {
      * @param requestConfiguration
      * @param params
      */
-    public boolean notificationIsVerified(RequestConfiguration requestConfiguration, ArrayList<NameValuePair> params) {
-        boolean result = false;
+    public PluginUtils.VerificationResponse notificationIsVerified(RequestConfiguration requestConfiguration, ArrayList<NameValuePair> params) {
+        PluginUtils.VerificationResponse result = PluginUtils.VerificationResponse.INVALID;
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
         if (response.getStatusCode() == 200) {
-            if (Boolean.valueOf(response.getContent())) {
-                result = true;
+            if (response.getContent().equalsIgnoreCase("true")) {
+                result = PluginUtils.VerificationResponse.TRUE;
             }
+            else if(response.getContent().equalsIgnoreCase("false"))
+            {
+                result = PluginUtils.VerificationResponse.INVALID;
+            }
+            else {
+                result = PluginUtils.VerificationResponse.FALSE;
+            }
+
         }
         return result;
     }
@@ -216,7 +226,7 @@ public class HttpClient {
 
         params.add(new BasicNameValuePair("_input_charset", "utf-8"));
         params.add(new BasicNameValuePair("out_trade_no", "0"));
-        params.add(new BasicNameValuePair("partner", requestConfiguration.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.PARTNER_ID).getValue()));
+        params.add(new BasicNameValuePair("partner", requestConfiguration.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHAND_PID).getValue()));
         params.add(new BasicNameValuePair("service", "single_trade_query"));
 
         // Get the result of the request

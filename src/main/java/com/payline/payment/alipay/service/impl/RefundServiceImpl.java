@@ -44,7 +44,7 @@ public class RefundServiceImpl implements RefundService {
                     .withIsSync("y")
                     .withOutReturnNo(refundRequest.getTransactionId())
                     .withOutTradeNo(refundRequest.getTransactionId())
-                    .withPartner(refundRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.PARTNER_ID).getValue())
+                    .withPartner(refundRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHAND_PID).getValue())
                     .withProductCode(product_code)
                     .withReturnAmount(refundRequest.getAmount().getAmountInSmallestUnit().toString())
                     .withService(service)

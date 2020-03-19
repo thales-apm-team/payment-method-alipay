@@ -40,9 +40,9 @@ public class PaymentServiceImpl implements PaymentService {
             CreateForexTrade createForexTrade = CreateForexTrade.CreateForexTradeBuilder
                     .aCreateForexTrade()
                     .withCurrency(paymentRequest.getOrder().getAmount().getCurrency().getCurrencyCode())
-                    .withNotifyUrl(paymentRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.NOTIFY_URL).getValue())
+                    .withNotifyUrl(paymentRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.PARTNER_URL).getValue())
                     .withOutTradeNo(paymentRequest.getTransactionId())
-                    .withPartner(paymentRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.PARTNER_ID).getValue())
+                    .withPartner(paymentRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHAND_PID).getValue())
                     .withProductCode(product_code)
                     .withReferUrl("http://google.fr")
                     .withReturnUrl(paymentRequest.getEnvironment().getRedirectionReturnURL())
