@@ -1,10 +1,12 @@
 package com.payline.payment.alipay.service.impl;
 
-import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
+import com.payline.payment.alipay.bean.object.ForexService;
 import com.payline.payment.alipay.bean.request.CreateForexTrade;
 import com.payline.payment.alipay.exception.PluginException;
-import com.payline.payment.alipay.utils.Constants;
 import com.payline.payment.alipay.utils.PluginUtils;
+import com.payline.payment.alipay.utils.SignatureUtils;
+import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
+import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
@@ -13,70 +15,90 @@ import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
 import com.payline.pmapi.logger.LogManager;
 import com.payline.pmapi.service.PaymentService;
+import org.apache.http.NameValuePair;
 import org.apache.logging.log4j.Logger;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.payline.payment.alipay.bean.object.ForexService.create_forex_trade;
+import static com.payline.payment.alipay.bean.object.ForexService.create_forex_trade_wap;
 
 public class PaymentServiceImpl implements PaymentService {
     private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
     private static final HttpClient client = HttpClient.getInstance();
+    // todo commentaire en anglais
 
     @Override
     public PaymentResponse paymentRequest(PaymentRequest paymentRequest) {
         PaymentResponse paymentResponse;
         try {
-            RequestConfiguration configuration = new RequestConfiguration(paymentRequest.getContractConfiguration(), paymentRequest.getEnvironment(), paymentRequest.getPartnerConfiguration());
-            String service, product_code;
-            if (PluginUtils.userIsOnPC) {
-                service = "create_forex_trade";
+            ForexService service;
+            String product_code;
+            if (PluginUtils.userIsOnPC) { // todo
+                service = create_forex_trade;
                 product_code = "NEW_OVERSEAS_SELLER";
             } else {
-                service = "create_forex_trade_wap";
+                service = create_forex_trade_wap;
                 product_code = "NEW_WAP_OVERSEAS_SELLER";
             }
-            //On crée un object createForexTrade pour mapper les données de la requête
+            // create createForexTrade request object
             CreateForexTrade createForexTrade = CreateForexTrade.CreateForexTradeBuilder
                     .aCreateForexTrade()
                     .withCurrency(paymentRequest.getOrder().getAmount().getCurrency().getCurrencyCode())
-                    .withNotifyUrl(paymentRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.PARTNER_URL).getValue())
+                    .withNotifyUrl(paymentRequest.getEnvironment().getNotificationURL())
                     .withOutTradeNo(paymentRequest.getTransactionId())
-                    .withPartner(paymentRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHAND_PID).getValue())
+                    .withPartner(paymentRequest.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue())
                     .withProductCode(product_code)
-                    .withReferUrl("http://google.fr")
+                    .withReferUrl(paymentRequest.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_URL).getValue())
                     .withReturnUrl(paymentRequest.getEnvironment().getRedirectionReturnURL())
                     .withService(service)
                     .withSubject(paymentRequest.getSoftDescriptor())
-                    .withTotalFee(paymentRequest.getAmount().getAmountInSmallestUnit().toString())
+                    .withTotalFee(paymentRequest.getAmount().getAmountInSmallestUnit().toString()) // todo convertir?
                     .build();
-            //On crée un object redirectionRequest avec l'url et les paramètres de la requête POST
-            //On récupère les paramètres de la requête avec la signature à partir des champs de l'objet CreateForexTrade
+
+            // create the url to get
+            ArrayList<NameValuePair> parameters = createForexTrade.getParametersList();
+            List<NameValuePair> signedParameters = SignatureUtils.getSignedParameters(parameters);
+            Map<String, String> postFormData = signedParameters.stream().collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
+
+            // return a PaymentResponseRedirect
             PaymentResponseRedirect.RedirectionRequest redirectionRequest = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder.aRedirectionRequest()
                     .withRequestType(PaymentResponseRedirect.RedirectionRequest.RequestType.POST)
-                    .withUrl(new URL(paymentRequest.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.ALIPAY_URL)))
-                    .withPostFormData(client.getParametersPayment(createForexTrade.getParametersList())).build();
+                    .withUrl(new URL(paymentRequest.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL)))
+                    .withPostFormData(postFormData)
+                    .build();
 
             paymentResponse = PaymentResponseRedirect.PaymentResponseRedirectBuilder.aPaymentResponseRedirect()
                     .withPartnerTransactionId(paymentRequest.getTransactionId())
                     .withRedirectionRequest(redirectionRequest)
                     .build();
-        } catch (PluginException e) {
-            LOGGER.error("Unexpected plugin error", e);
-            paymentResponse = e.toPaymentResponseFailureBuilder().build();
-        } catch (MalformedURLException | UnsupportedEncodingException e) {
-            LOGGER.error("Unexpected plugin error", e);
+
+        } catch (MalformedURLException e) {
+            String errorMessage = "PartnerConfig ALIPAY_URL is malformed";
+            LOGGER.error(errorMessage, e);
             paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder
                     .aPaymentResponseFailure()
+                    .withErrorCode(errorMessage)
                     .withFailureCause(FailureCause.INVALID_DATA)
                     .build();
+
+        } catch (PluginException e) {
+            LOGGER.error(e.getErrorCode());
+            paymentResponse = e.toPaymentResponseFailureBuilder().build();
+
         } catch (RuntimeException e) {
             LOGGER.error("Unexpected plugin error", e);
             paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder
                     .aPaymentResponseFailure()
                     .withErrorCode(PluginException.runtimeErrorCode(e))
-                    .withFailureCause(FailureCause.INVALID_DATA)
+                    .withFailureCause(FailureCause.INTERNAL_ERROR)
                     .build();
+
         }
         return paymentResponse;
     }

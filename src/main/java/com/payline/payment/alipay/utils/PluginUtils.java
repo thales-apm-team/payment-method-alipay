@@ -1,6 +1,5 @@
 package com.payline.payment.alipay.utils;
 
-import com.payline.payment.alipay.service.impl.PaymentServiceImpl;
 import com.payline.pmapi.bean.common.FailureCause;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;

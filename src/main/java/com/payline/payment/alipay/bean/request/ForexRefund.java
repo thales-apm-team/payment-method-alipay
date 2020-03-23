@@ -1,10 +1,10 @@
 package com.payline.payment.alipay.bean.request;
 
+import com.payline.payment.alipay.bean.object.ForexService;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ForexRefund extends Request {
     String currency;
@@ -27,7 +27,7 @@ public class ForexRefund extends Request {
             this.build().partner = partner;
             return this;
         }
-        public ForexRefund.ForexRefundBuilder withService(String service) {
+        public ForexRefund.ForexRefundBuilder withService(ForexService service) {
             this.build().service = service;
             return this;
         }
@@ -72,7 +72,7 @@ public class ForexRefund extends Request {
         list.add(new BasicNameValuePair("partner", this.partner));
         list.add(new BasicNameValuePair("product_code", this.product_code));
         list.add(new BasicNameValuePair("return_amount", this.return_amount));
-        list.add(new BasicNameValuePair("service", this.service));
+        list.add(new BasicNameValuePair("service", this.service.name()));
         return list;
     }
 }

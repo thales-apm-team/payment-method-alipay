@@ -1,7 +1,6 @@
 package com.payline.payment.alipay.bean.request;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import com.payline.payment.alipay.bean.object.ForexService;
 
 import java.nio.charset.StandardCharsets;
