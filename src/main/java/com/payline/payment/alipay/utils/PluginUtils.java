@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,8 +21,10 @@ import java.util.stream.Collectors;
 
 public class PluginUtils {
     static public boolean userIsOnPC = false;
+
     /* Static utility class : no need to instantiate it (to please Sonar) */
-    private PluginUtils(){}
+    private PluginUtils() {
+    }
 
     /**
      * Convert the path and headers of a {@link HttpRequestBase} to a readable {@link String}.
@@ -29,26 +33,25 @@ public class PluginUtils {
      * @param httpRequest the request to convert
      * @return request method, path and headers as a string
      */
-    public static String requestToString( HttpRequestBase httpRequest ){
+    public static String requestToString(HttpRequestBase httpRequest) {
         String ln = System.lineSeparator();
         String str = httpRequest.getMethod() + " " + httpRequest.getURI() + ln;
 
         List<String> strHeaders = new ArrayList<>();
-        for( Header h : httpRequest.getAllHeaders() ){
+        for (Header h : httpRequest.getAllHeaders()) {
             // For obvious security reason, the value of Authorization header is never printed in the logs
-            if( HttpHeaders.AUTHORIZATION.equals( h.getName() ) ){
+            if (HttpHeaders.AUTHORIZATION.equals(h.getName())) {
                 String[] value = h.getValue().split(" ");
-                strHeaders.add( h.getName() + ": " + ( value.length > 1 ? value[0] : "" ) + " *****" );
-            }
-            else {
-                strHeaders.add( h.getName() + ": " + h.getValue() );
+                strHeaders.add(h.getName() + ": " + (value.length > 1 ? value[0] : "") + " *****");
+            } else {
+                strHeaders.add(h.getName() + ": " + h.getValue());
             }
         }
         str += String.join(ln, strHeaders);
 
-        if( httpRequest instanceof HttpPost){
+        if (httpRequest instanceof HttpPost) {
             try {
-                str += ln + new BufferedReader(new InputStreamReader(((HttpPost)httpRequest).getEntity().getContent()))
+                str += ln + new BufferedReader(new InputStreamReader(((HttpPost) httpRequest).getEntity().getContent()))
                         .lines()
                         .collect(Collectors.joining(ln));
             } catch (IOException e) {
@@ -62,7 +65,7 @@ public class PluginUtils {
     /**
      * Truncate the given string with the given length, if necessary.
      *
-     * @param value The string to truncate
+     * @param value  The string to truncate
      * @param length The maximum allowed length
      * @return The truncated string
      */
@@ -77,17 +80,15 @@ public class PluginUtils {
      * Switch user device
      * This method allow to simulate a computer or a mobile (for testing services on mobile)
      */
-    public static void SwitchDevice(boolean isOnPC)
-    {
+    public static void SwitchDevice(boolean isOnPC) {
         PluginUtils.userIsOnPC = isOnPC;
     }
 
     /**
      * Handle error code
      */
-    public static FailureCause getFailureCause(String errorCode)
-    {
-        switch(errorCode) {
+    public static FailureCause getFailureCause(String errorCode) {
+        switch (errorCode) {
             case "PURCHASE_TRADE_NOT_EXIST":
             case "ILLEGAL_SIGN":
             case "ILLEGAL_DYN_MD5_KEY":
@@ -154,12 +155,25 @@ public class PluginUtils {
         FALSE,
         INVALID;
     }
+
     public static String getStringUsingRegex(String regex, String data) {
         Pattern pattern = Pattern.compile("'(.*?)'");
         Matcher matcher = pattern.matcher(data);
         if (matcher.find()) {
-           return matcher.group(1);
+            return matcher.group(1);
         }
         return "";
+    }
+
+
+    /**
+     * create a date in the format yyyy-MM-dd HH:mm:ss
+     *
+     * @param date the date to convert
+     * @return
+     */
+    public static String formatDate(Date date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        return format.format(date);
     }
 }

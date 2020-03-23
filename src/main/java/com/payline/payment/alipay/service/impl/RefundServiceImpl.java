@@ -1,12 +1,11 @@
 package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
-import com.payline.payment.alipay.bean.request.CreateForexTrade;
 import com.payline.payment.alipay.bean.request.ForexRefund;
 import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.exception.PluginException;
-import com.payline.payment.alipay.utils.Constants;
 import com.payline.payment.alipay.utils.PluginUtils;
+import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
@@ -16,62 +15,65 @@ import com.payline.pmapi.bean.refund.response.impl.RefundResponseSuccess;
 import com.payline.pmapi.logger.LogManager;
 import com.payline.pmapi.service.RefundService;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.plugins.Plugin;
 
 import java.util.Date;
 
+import static com.payline.payment.alipay.bean.object.ForexService.forex_refund;
+
 public class RefundServiceImpl implements RefundService {
-    private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(RefundServiceImpl.class);
     private static final HttpClient client = HttpClient.getInstance();
 
     @Override
     public RefundResponse refundRequest(RefundRequest refundRequest) {
+        RefundResponse refundResponse;
         try {
             RequestConfiguration configuration = new RequestConfiguration(refundRequest.getContractConfiguration(), refundRequest.getEnvironment(), refundRequest.getPartnerConfiguration());
-            String service, product_code;
-            if (PluginUtils.userIsOnPC) {
-                service = "forex_refund";
-                product_code = "NEW_OVERSEAS_SELLER";
-            } else {
-                service = "forex_refund";
-                product_code = "NEW_WAP_OVERSEAS_SELLER";
-            }
-            //On crée un object ForexRefund pour mapper les données de la requête
+            String product_code = PluginUtils.userIsOnPC ? "NEW_OVERSEAS_SELLER" : "NEW_WAP_OVERSEAS_SELLER";
+
+            // create ForexRefund request object
             ForexRefund forexRefund = ForexRefund.ForexRefundBuilder
                     .aForexRefund()
-                    .withCurrency(refundRequest.getOrder().getAmount().getCurrency().getCurrencyCode())
-                    .withGmtReturn(new Date().toString())
-                    .withIsSync("y")
-                    .withOutReturnNo(refundRequest.getTransactionId())
-                    .withOutTradeNo(refundRequest.getTransactionId())
-                    .withPartner(refundRequest.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHAND_PID).getValue())
+                    .withCurrency(refundRequest.getAmount().getCurrency().getCurrencyCode())
+                    .withGmtReturn(PluginUtils.formatDate(new Date()))
+                    .withIsSync("Y")
+                    .withOutReturnNo(refundRequest.getTransactionId())  // refund Id
+                    .withOutTradeNo(refundRequest.getTransactionId())   // transaction Id
+                    .withPartner(refundRequest.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue())
                     .withProductCode(product_code)
-                    .withReturnAmount(refundRequest.getAmount().getAmountInSmallestUnit().toString())
-                    .withService(service)
+                    .withReturnAmount(refundRequest.getAmount().getAmountInSmallestUnit().toString()) // todo convertir?
+                    .withService(forex_refund)
                     .build();
 
+            // call refund API
             AlipayAPIResponse refundAlipayAPIResponse = client.getRefund(configuration, forexRefund.getParametersList());
 
-            if (refundAlipayAPIResponse.getIs_success().equals("T")) {
-                return RefundResponseSuccess.RefundResponseSuccessBuilder.aRefundResponseSuccess()
+            // check the response and return a RefundResponse
+            if (refundAlipayAPIResponse.isSuccess()) {
+                refundResponse =  RefundResponseSuccess.RefundResponseSuccessBuilder.aRefundResponseSuccess()
                         .withPartnerTransactionId(refundRequest.getPartnerTransactionId())
                         .withStatusCode("200")
                         .build();
+            }else {
+                refundResponse = RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
+                        .withErrorCode(refundAlipayAPIResponse.getError())
+                        .withFailureCause(PluginUtils.getFailureCause(refundAlipayAPIResponse.getError())) // todo bouger ca dans une classe business
+                        .build();
             }
-            return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
-                    .withErrorCode(refundAlipayAPIResponse.getError())
-                    .withFailureCause(PluginUtils.getFailureCause(refundAlipayAPIResponse.getError()))
-                    .build();
+
         } catch (PluginException e) {
-            return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
-                    .withFailureCause(PluginUtils.getFailureCause(e.getFailureCause().toString()))
-                    .build();
-        }
-        catch (RuntimeException e) {
-            return RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
+            LOGGER.error(e.getErrorCode());
+            refundResponse = e.toRefundResponseFailureBuilder().build();
+
+        } catch (RuntimeException e) {
+            LOGGER.error("Unexpected plugin error", e);
+            refundResponse = RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
+                    .withErrorCode(PluginException.runtimeErrorCode(e))
                     .withFailureCause(FailureCause.INTERNAL_ERROR)
                     .build();
+
         }
+        return refundResponse;
     }
 
     @Override

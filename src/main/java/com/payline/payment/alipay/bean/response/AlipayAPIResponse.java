@@ -26,11 +26,7 @@ public class AlipayAPIResponse {
 
     public boolean isSuccess()
     {
-        if(getIs_success().equalsIgnoreCase("t"))
-        {
-            return true;
-        }
-        return false;
+        return getIs_success().equalsIgnoreCase("t");
     }
 
     public void setIs_success(String is_success) {
