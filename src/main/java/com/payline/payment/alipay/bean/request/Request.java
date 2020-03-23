@@ -2,6 +2,7 @@ package com.payline.payment.alipay.bean.request;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.payline.payment.alipay.bean.object.ForexService;
 
 import java.nio.charset.StandardCharsets;
 
@@ -9,7 +10,7 @@ abstract class Request {
     protected String _input_charset = StandardCharsets.UTF_8.toString();
     protected String out_trade_no;
     protected String partner;
-    protected String service;
+    protected ForexService service;
     protected String sign_type = "RSA2";
     protected String sign;
 
@@ -25,7 +26,7 @@ abstract class Request {
         return partner;
     }
 
-    public String getService() {
+    public ForexService getService() {
         return service;
     }
 

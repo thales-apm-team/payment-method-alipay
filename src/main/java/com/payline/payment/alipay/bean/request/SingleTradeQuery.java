@@ -1,5 +1,6 @@
 package com.payline.payment.alipay.bean.request;
 
+import com.payline.payment.alipay.bean.object.ForexService;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -23,7 +24,7 @@ public class SingleTradeQuery extends Request {
             return this;
         }
 
-        public SingleTradeQuery.SingleTradeQueryBuilder withService(String service) {
+        public SingleTradeQuery.SingleTradeQueryBuilder withService(ForexService service) {
             this.build().service = service;
             return this;
         }
@@ -39,7 +40,7 @@ public class SingleTradeQuery extends Request {
         list.add(new BasicNameValuePair("_input_charset", this._input_charset));
         list.add(new BasicNameValuePair("out_trade_no", this.out_trade_no));
         list.add(new BasicNameValuePair("partner", this.partner));
-        list.add(new BasicNameValuePair("service", this.service));
+        list.add(new BasicNameValuePair("service", this.service.name()));
         return list;
     }
 }

@@ -1,6 +1,7 @@
 package com.payline.payment.alipay.bean.request;
 
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
+import com.payline.payment.alipay.bean.object.ForexService;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -29,7 +30,7 @@ public class CreateForexTrade extends Request {
             this.build().partner = partner;
             return this;
         }
-        public CreateForexTrade.CreateForexTradeBuilder withService(String service) {
+        public CreateForexTrade.CreateForexTradeBuilder withService(ForexService service) {
             this.build().service = service;
             return this;
         }
@@ -74,9 +75,9 @@ public class CreateForexTrade extends Request {
         list.add(new BasicNameValuePair("out_trade_no", this.out_trade_no));
         list.add(new BasicNameValuePair("partner", this.partner));
         list.add(new BasicNameValuePair("product_code", this.product_code));
-        list.add(new BasicNameValuePair("refer_url", "https://www.google.fr"));
+        list.add(new BasicNameValuePair("refer_url", this.refer_url));
         list.add(new BasicNameValuePair("return_url", this.return_url));
-        list.add(new BasicNameValuePair("service", this.service));
+        list.add(new BasicNameValuePair("service", this.service.name()));
         list.add(new BasicNameValuePair("subject", this.subject));
         list.add(new BasicNameValuePair("total_fee", this.total_fee));
         return list;
