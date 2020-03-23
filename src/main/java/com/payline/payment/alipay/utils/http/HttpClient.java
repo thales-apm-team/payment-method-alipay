@@ -6,10 +6,10 @@ import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.exception.InvalidDataException;
 import com.payline.payment.alipay.exception.PluginException;
-import com.payline.payment.alipay.utils.Constants;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.SignatureUtils;
-import com.payline.pmapi.bean.common.Buyer;
+import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
+import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.http.NameValuePair;
@@ -22,7 +22,6 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.plugins.Plugin;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -124,7 +123,7 @@ public class HttpClient {
      * @param requestConfiguration
      */
     private void verifyPartnerConfigurationURL(RequestConfiguration requestConfiguration) {
-        if (requestConfiguration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.ALIPAY_URL) == null) {
+        if (requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL) == null) {
             throw new InvalidDataException("Missing API url from partner configuration (sensitive properties)");
         }
 
@@ -226,7 +225,7 @@ public class HttpClient {
 
         params.add(new BasicNameValuePair("_input_charset", "utf-8"));
         params.add(new BasicNameValuePair("out_trade_no", "0"));
-        params.add(new BasicNameValuePair("partner", requestConfiguration.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHAND_PID).getValue()));
+        params.add(new BasicNameValuePair("partner", requestConfiguration.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue()));
         params.add(new BasicNameValuePair("service", "single_trade_query"));
 
         // Get the result of the request
@@ -257,7 +256,7 @@ public class HttpClient {
 
         // Get the API URL
         try {
-            baseUrl = new URI(requestConfiguration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.ALIPAY_URL));
+            baseUrl = new URI(requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL));
         } catch (URISyntaxException e) {
             throw new InvalidDataException(SERVICE_URL_ERROR, e);
         }
@@ -283,8 +282,8 @@ public class HttpClient {
         HttpGet httpGet = new HttpGet(uri);
 
         // Timeout
-        final String readTimeout = requestConfiguration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.READ_TIMEOUT);
-        final String connectTimeout = requestConfiguration.getPartnerConfiguration().getProperty(Constants.PartnerConfigurationKeys.CONNECT_TIMEOUT);
+        final String readTimeout = requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.READ_TIMEOUT);
+        final String connectTimeout = requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.CONNECT_TIMEOUT);
 
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectTimeout(Integer.valueOf(connectTimeout))

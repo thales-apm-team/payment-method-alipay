@@ -11,14 +11,15 @@ public class PaymentFormConfigurationServiceImpl extends LogoPaymentFormConfigur
     private static final String NO_FIELD_TEXT = "form.button.text";
     private static final String NO_FIELD_DESCRIPTION = "form.button.description";
     private I18nService i18n = I18nService.getInstance();
+
     @Override
     public PaymentFormConfigurationResponse getPaymentFormConfiguration(PaymentFormConfigurationRequest paymentFormConfigurationRequest) {
-        PaymentFormConfigurationResponse pfcResponse;
         NoFieldForm noFieldForm = NoFieldForm.NoFieldFormBuilder.aNoFieldForm()
                 .withDisplayButton(true)
                 .withButtonText(i18n.getMessage(NO_FIELD_TEXT, paymentFormConfigurationRequest.getLocale()))
                 .withDescription(i18n.getMessage(NO_FIELD_DESCRIPTION, paymentFormConfigurationRequest.getLocale()))
                 .build();
+
         return PaymentFormConfigurationResponseSpecific.PaymentFormConfigurationResponseSpecificBuilder.aPaymentFormConfigurationResponseSpecific()
                 .withPaymentForm(noFieldForm)
                 .build();
