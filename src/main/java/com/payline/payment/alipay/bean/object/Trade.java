@@ -197,11 +197,11 @@ public class Trade {
         this.trade_no = trade_no;
     }
 
-    public String getTrade_status() {
+    public TradeStatus getTrade_status() {
         return trade_status;
     }
 
-    public void setTrade_status(String trade_status) {
+    public void setTrade_status(TradeStatus trade_status) {
         this.trade_status = trade_status;
     }
 
@@ -213,7 +213,7 @@ public class Trade {
         this.use_coupon = use_coupon;
     }
 
-    private String trade_status;
+    private TradeStatus trade_status;
     private String use_coupon;
 
     public static Trade fromXml(String xml) {
@@ -222,5 +222,9 @@ public class Trade {
         } catch (IOException e) {
             throw new InvalidDataException("Unable to parse XML CheckStatusResponse", e);
         }
+    }
+
+    public enum TradeStatus{
+        TRADE_FINISHED, WAIT_BUYER_PAY, TRADE_CLOSED
     }
 }

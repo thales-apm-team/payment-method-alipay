@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.NotifyResponse;
 import com.payline.payment.alipay.exception.InvalidDataException;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.PluginUtils;
@@ -136,24 +137,10 @@ public class HttpClient {
      * @param requestConfiguration
      * @param params
      */
-    public PluginUtils.VerificationResponse notificationIsVerified(RequestConfiguration requestConfiguration, ArrayList<NameValuePair> params) {
-        PluginUtils.VerificationResponse result = PluginUtils.VerificationResponse.INVALID;
+    public NotifyResponse notificationIsVerified(RequestConfiguration requestConfiguration, ArrayList<NameValuePair> params) {
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
-        if (response.getStatusCode() == 200) {
-            if (response.getContent().equalsIgnoreCase("true")) {
-                result = PluginUtils.VerificationResponse.TRUE;
-            }
-            else if(response.getContent().equalsIgnoreCase("false"))
-            {
-                result = PluginUtils.VerificationResponse.INVALID;
-            }
-            else {
-                result = PluginUtils.VerificationResponse.FALSE;
-            }
-
-        }
-        return result;
+        return NotifyResponse.valueOf(response.getContent().toUpperCase());
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.payline.payment.alipay.bean.request;
 
+import com.payline.payment.alipay.bean.object.ForexService;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -8,7 +9,8 @@ import java.util.ArrayList;
 public class NotifyVerify {
     String notify_id;
     String partner;
-    String service;
+    ForexService service;
+
     public static class NotifyVerifyBuilder
     {
         static NotifyVerify notifyVerify = new NotifyVerify();
@@ -23,7 +25,7 @@ public class NotifyVerify {
             this.build().partner = partner;
             return this;
         }
-        public NotifyVerify.NotifyVerifyBuilder withService(String service) {
+        public NotifyVerify.NotifyVerifyBuilder withService(ForexService service) {
             this.build().service = service;
             return this;
         }
@@ -37,7 +39,7 @@ public class NotifyVerify {
         ArrayList<NameValuePair> list = new ArrayList<>();
         list.add(new BasicNameValuePair("notify_id", this.notify_id));
         list.add(new BasicNameValuePair("partner", this.partner));
-        list.add(new BasicNameValuePair("service", this.service));
+        list.add(new BasicNameValuePair("service", this.service.name()));
         return list;
     }
 }

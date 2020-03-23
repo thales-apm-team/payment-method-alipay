@@ -157,7 +157,7 @@ public class PluginUtils {
     }
 
     public static String getStringUsingRegex(String regex, String data) {
-        Pattern pattern = Pattern.compile("'(.*?)'");
+        Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(data);
         if (matcher.find()) {
             return matcher.group(1);

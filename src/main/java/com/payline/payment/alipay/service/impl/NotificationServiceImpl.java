@@ -1,17 +1,14 @@
 package com.payline.payment.alipay.service.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
-import com.payline.payment.alipay.bean.object.Notification;
 import com.payline.payment.alipay.bean.object.Trade;
-import com.payline.payment.alipay.bean.request.CreateForexTrade;
 import com.payline.payment.alipay.bean.request.NotifyVerify;
 import com.payline.payment.alipay.bean.request.SingleTradeQuery;
 import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.NotifyResponse;
 import com.payline.payment.alipay.exception.PluginException;
-import com.payline.payment.alipay.utils.Constants;
 import com.payline.payment.alipay.utils.PluginUtils;
+import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.common.OnHoldCause;
@@ -24,77 +21,55 @@ import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
+import com.payline.pmapi.logger.LogManager;
 import com.payline.pmapi.service.NotificationService;
-import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.Logger;
 
-import static com.payline.payment.alipay.utils.PluginUtils.VerificationResponse.*;
+import static com.payline.payment.alipay.bean.object.ForexService.notify_verify;
+import static com.payline.payment.alipay.bean.object.ForexService.single_trade_query;
 
 public class NotificationServiceImpl implements NotificationService {
-    public static final HttpClient client = HttpClient.getInstance();
-    private Gson parser;
+    private static final Logger LOGGER = LogManager.getLogger(NotificationServiceImpl.class);
 
-    public NotificationServiceImpl() {
-        this.parser = new GsonBuilder().create();
-    }
+    public static final HttpClient client = HttpClient.getInstance();
 
     @Override
     public NotificationResponse parse(NotificationRequest request) {
         RequestConfiguration configuration;
-        PaymentResponse paymentResponse = null;
+        PaymentResponse paymentResponse;
+        String transactionId = "UNKNOWN";
+
         try {
             configuration = new RequestConfiguration(request.getContractConfiguration(), request.getEnvironment(), request.getPartnerConfiguration());
             String content = PluginUtils.inputStreamToString(request.getContent());
-            String transactionId = PluginUtils.getStringUsingRegex("out_trade_no=([^&]+)&", content);
+            transactionId = PluginUtils.getStringUsingRegex("out_trade_no=([^&]+)&", content);
             String notificationId = PluginUtils.getStringUsingRegex("notify_id=(.{34})", content);
-            //On crée un object NotifyVerify pour mapper les données de la requête
+
+            if (PluginUtils.isEmpty(transactionId)) {
+                LOGGER.error("Bad content: {}", content);
+                throw new PluginException("No transactionId in notification content");
+            }
+
+            if (PluginUtils.isEmpty(notificationId)) {
+                LOGGER.error("Bad content: {}", content);
+                throw new PluginException("No notificationId in notification content");
+            }
+
+            // create notify_verify request object
             NotifyVerify notifyVerify = NotifyVerify.NotifyVerifyBuilder
                     .aNotifyVerify()
                     .withNotifyId(notificationId)
-                    .withPartner(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHAND_PID).getValue())
-                    .withService("notify_verify")
+                    .withPartner(request.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue())
+                    .withService(notify_verify)
                     .build();
-            //Check notification is coming from Alipay
-            PluginUtils.VerificationResponse verificationResponse = client.notificationIsVerified(configuration, notifyVerify.getParametersList());
-            switch(verificationResponse){
+
+            // call verify API
+            NotifyResponse verificationResponse = client.notificationIsVerified(configuration, notifyVerify.getParametersList());
+            switch (verificationResponse) {
                 case TRUE:
                     //Notification is verified, so we can check transaction status
-                    SingleTradeQuery singleTradeQuery = SingleTradeQuery.SingleTradeQueryBuilder
-                            .aSingleTradeQuery()
-                            .withOutTradeNo(transactionId)
-                            .withPartner(request.getContractConfiguration().getProperty(Constants.ContractConfigurationKeys.MERCHAND_PID).getValue())
-                            .withService("single_trade_query")
-                            .build();
-                    AlipayAPIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
-                    if (response.getIs_success().equalsIgnoreCase("t")) {
-                        Trade transaction = response.getResponse().getTrade();
-                        if (transaction.getTrade_status().equalsIgnoreCase("TRADE_FINISHED")) {
-                            //Return a paymentResponseSuccess
-                            paymentResponse = PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
-                                    .withPartnerTransactionId(transaction.getTrade_no())
-                                    .withStatusCode(transaction.getTrade_status())
-                                    .withTransactionAdditionalData(transaction.getBuyer_id())
-                                    .build();
-                        } else if (transaction.getTrade_status().equalsIgnoreCase("TRADE_CLOSED")) {
-                            //Return a paymentResponseFailure
-                            paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
-                                    .withErrorCode(transaction.getTrade_status())
-                                    .withFailureCause(FailureCause.REFUSED)
-                                    .build();
-                        } else if (transaction.getTrade_status().equalsIgnoreCase("WAIT_BUYER_PAY")) {
-                            //Return a paymentResponseOnHold
-                            paymentResponse = PaymentResponseOnHold.PaymentResponseOnHoldBuilder.aPaymentResponseOnHold()
-                                    .withPartnerTransactionId(transaction.getTrade_no())
-                                    .withOnHoldCause(OnHoldCause.ASYNC_RETRY)
-                                    .build();
-                        }
-                    } else {
-                        //Response success is "F"
-                        //Return a paymentResponseFailure
-                        paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
-                                .withErrorCode(response.getError())
-                                .withFailureCause(FailureCause.INVALID_DATA)
-                                .build();
-                    }
+                    paymentResponse = getStatus(configuration, transactionId);
+
                     break;
                 case FALSE:
                     //Notification can't be verified
@@ -104,7 +79,8 @@ public class NotificationServiceImpl implements NotificationService {
                             .build();
                     break;
                 case INVALID:
-                    //Notification is invalid
+                default:
+                    //notify_verify call is invalid
                     //Return a paymentResponseFailure
                     paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                             .withFailureCause(FailureCause.INVALID_DATA)
@@ -124,7 +100,7 @@ public class NotificationServiceImpl implements NotificationService {
         TransactionCorrelationId correlationId = TransactionCorrelationId.TransactionCorrelationIdBuilder
                 .aCorrelationIdBuilder()
                 .withType(TransactionCorrelationId.CorrelationIdType.PARTNER_TRANSACTION_ID)
-                .withValue(request.getTransactionId())
+                .withValue(transactionId)
                 .build();
 
         return PaymentResponseByNotificationResponse.PaymentResponseByNotificationResponseBuilder
@@ -139,5 +115,61 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void notifyTransactionStatus(NotifyTransactionStatusRequest notifyTransactionStatusRequest) {
         // does nothing
+    }
+
+    /**
+     * create a single_trade_query request object, call API to get the transactionStatus and create a PaymentResponse from the received status
+     *
+     * @param configuration
+     * @param transactionId
+     * @return
+     */
+    private PaymentResponse getStatus(RequestConfiguration configuration, String transactionId) {
+        PaymentResponse paymentResponse;
+
+        // create c request object
+        SingleTradeQuery singleTradeQuery = SingleTradeQuery.SingleTradeQueryBuilder
+                .aSingleTradeQuery()
+                .withOutTradeNo(transactionId)
+                .withPartner(configuration.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue())
+                .withService(single_trade_query)
+                .build();
+
+        // call get API
+        AlipayAPIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
+        if (response.isSuccess()) {
+            Trade transaction = response.getResponse().getTrade();
+            Trade.TradeStatus status = transaction.getTrade_status();
+
+            switch (status) {
+                case TRADE_FINISHED:
+                    paymentResponse = PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
+                            .withPartnerTransactionId(transaction.getTrade_no())
+                            .withStatusCode(status.name())
+                            .withTransactionAdditionalData(transaction.getBuyer_id())
+                            .build();
+                    break;
+                case WAIT_BUYER_PAY:
+                    paymentResponse = PaymentResponseOnHold.PaymentResponseOnHoldBuilder.aPaymentResponseOnHold()
+                            .withPartnerTransactionId(transaction.getTrade_no())
+                            .withOnHoldCause(OnHoldCause.ASYNC_RETRY)
+                            .build();
+                    break;
+                case TRADE_CLOSED:
+                default:
+                    paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
+                            .withErrorCode(status.name())
+                            .withFailureCause(FailureCause.REFUSED)
+                            .build();
+                    break;
+            }
+        } else {
+            //Response success is "F"
+            paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
+                    .withErrorCode(response.getError())
+                    .withFailureCause(FailureCause.INVALID_DATA)
+                    .build();
+        }
+        return paymentResponse;
     }
 }
