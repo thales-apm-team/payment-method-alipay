@@ -111,10 +111,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
         }
 
-        // Check the connection to the API by executing the verifyConnection function
-        RequestConfiguration requestConfiguration = RequestConfiguration.build(contractParametersCheckRequest);
-
-
         // If partner id is missing, no need to go further, as it is required
         if (!errors.isEmpty()) {
             return errors;

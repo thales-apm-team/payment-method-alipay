@@ -156,6 +156,10 @@ public class MockUtils {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
         contractProperties.put(ContractConfigurationKeys.MERCHANT_PID, new ContractProperty("2088621926786355"));
+        contractProperties.put(ContractConfigurationKeys.SUPPLIER, new ContractProperty("merchant"));
+        contractProperties.put(ContractConfigurationKeys.SECONDARY_MERCHANT_ID, new ContractProperty("1314520"));
+        contractProperties.put(ContractConfigurationKeys.SECONDARY_MERCHANT_NAME, new ContractProperty("China Substation"));
+        contractProperties.put(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY, new ContractProperty("5499"));
         return new ContractConfiguration("Alipay", contractProperties);
     }
     /**

@@ -2,15 +2,15 @@ package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.MockUtils;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
-import com.payline.payment.alipay.exception.PluginException;
+import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.payment.alipay.utils.properties.ReleaseProperties;
 import com.payline.pmapi.bean.configuration.ReleaseInformation;
+import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
+import com.payline.pmapi.bean.configuration.parameter.impl.ListBoxParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
@@ -20,98 +20,114 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Month;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 
 class ConfigurationServiceImplTest {
 
     /* I18nService is not mocked here on purpose, to validate the existence of all
     the messages related to this class, at least in the default locale */
-    @Mock private ReleaseProperties releaseProperties;
+    @Mock
+    private ReleaseProperties releaseProperties;
     @Mock
     HttpClient httpClient;
 
 
     @InjectMocks
     private ConfigurationServiceImpl service;
-    /**------------------------------------------------------------------------------------------------------------------*/
+
+    /**
+     * ------------------------------------------------------------------------------------------------------------------
+     */
     @BeforeAll
-    static void before(){
+    static void before() {
         // This allows to test the default messages.properties file (no locale suffix)
-        Locale.setDefault( Locale.CHINESE );
+        Locale.setDefault(Locale.CHINESE);
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
+
+    /**
+     * ------------------------------------------------------------------------------------------------------------------
+     */
     @BeforeEach
-    void setup(){
+    void setup() {
         MockitoAnnotations.initMocks(this);
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
+
+    /**
+     * ------------------------------------------------------------------------------------------------------------------
+     */
     @AfterAll
-    static void after(){
+    static void after() {
         // Back to standard default locale
-        Locale.setDefault( Locale.ENGLISH );
+        Locale.setDefault(Locale.ENGLISH);
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
-    // TODO: check method tests
-    /**------------------------------------------------------------------------------------------------------------------*/
+
+    /**
+     * ------------------------------------------------------------------------------------------------------------------
+     */
     @Test
-    void getName(){
+    void getName() {
         // when: calling the method getName
-        String name = service.getName( Locale.getDefault() );
+        String name = service.getName(Locale.getDefault());
 
         // then: the method returns the name
-        assertNotNull( name );
+        assertNotNull(name);
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
+
+    /**
+     * ------------------------------------------------------------------------------------------------------------------
+     */
     @ParameterizedTest
     @MethodSource("getLocales")
-    void getParameters( Locale locale ) {
-        /*
+    void getParameters(Locale locale) {
         // when: retrieving the contract parameters
-        List<AbstractParameter> parameters = service.getParameters( locale );
+        List<AbstractParameter> parameters = service.getParameters(locale);
 
         // then: each parameter has a unique key, a label and a description. List box parameters have at least 1 possible value.
         List<String> keys = new ArrayList<>();
-        for( AbstractParameter param : parameters ){
+        for (AbstractParameter param : parameters) {
             // 2 different parameters should not have the same key
-            assertFalse( keys.contains( param.getKey() ) );
-            keys.add( param.getKey() );
+            assertFalse(keys.contains(param.getKey()));
+            keys.add(param.getKey());
 
             // each parameter should have a label and a description
-            assertNotNull( param.getLabel() );
-            assertFalse( param.getLabel().contains("???") );
-            assertNotNull( param.getDescription() );
-            assertFalse( param.getDescription().contains("???") );
+            assertNotNull(param.getLabel());
+            assertFalse(param.getLabel().contains("???"));
+            assertNotNull(param.getDescription());
+            assertFalse(param.getDescription().contains("???"));
 
             // in case of a ListBoxParameter, it should have at least 1 value
-            if( param instanceof ListBoxParameter ){
-                assertFalse( ((ListBoxParameter) param).getList().isEmpty() );
+            if (param instanceof ListBoxParameter) {
+                assertFalse(((ListBoxParameter) param).getList().isEmpty());
             }
-        }*/
+        }
     }
     /**------------------------------------------------------------------------------------------------------------------*/
-    /** Set of locales to test the getParameters() method. ZZ allows to search in the default messages.properties file. */
-    static Stream<Locale> getLocales(){
-        return Stream.of( Locale.FRENCH, Locale.ENGLISH, new Locale("ZZ") );
+    /**
+     * Set of locales to test the getParameters() method. ZZ allows to search in the default messages.properties file.
+     */
+    static Stream<Locale> getLocales() {
+        return Stream.of(Locale.FRENCH, Locale.ENGLISH, new Locale("ZZ"));
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
+
+    /**
+     * ------------------------------------------------------------------------------------------------------------------
+     */
     @Test
-    void getReleaseInformation(){
+    void getReleaseInformation() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         String version = "M.m.p";
 
         // given: the release properties are OK
-        doReturn( version ).when( releaseProperties ).get("release.version");
+        doReturn(version).when(releaseProperties).get("release.version");
         Calendar cal = new GregorianCalendar();
         cal.set(2019, Calendar.AUGUST, 19);
-        doReturn( formatter.format( cal.getTime() ) ).when( releaseProperties ).get("release.date");
+        doReturn(formatter.format(cal.getTime())).when(releaseProperties).get("release.date");
 
         // when: calling the method getReleaseInformation
         ReleaseInformation releaseInformation = service.getReleaseInformation();
@@ -122,23 +138,57 @@ class ConfigurationServiceImplTest {
         assertEquals(Month.AUGUST, releaseInformation.getDate().getMonth());
         assertEquals(19, releaseInformation.getDate().getDayOfMonth());
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
+
+    /**
+     * ------------------------------------------------------------------------------------------------------------------
+     */
     @Test
-    void check_nominal(){
-        /*
+    void check_nominal() {
+
         // given: a valid configuration, including client ID / secret
         ContractParametersCheckRequest checkRequest = MockUtils.aContractParametersCheckRequest();
 
-        doReturn( true ).when(httpClient).verifyConnection( any(RequestConfiguration.class) );
+        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<alipay>\n" +
+                "    <is_success>F</is_success>\n" +
+                "    <error>TRADE_NOT_EXIST</error>\n" +
+                "</alipay>";
+        AlipayAPIResponse mockResponse = AlipayAPIResponse.fromXml(xml);
+        doReturn(mockResponse).when(httpClient).getTransactionStatus(any(RequestConfiguration.class), anyMap());
 
         // when: checking the configuration
-        Map<String, String> errors = service.check( checkRequest );
+        Map<String, String> errors = service.check(checkRequest);
 
         // then: error map is empty
-        assertTrue( errors.isEmpty() );
-        */
+        assertTrue(errors.isEmpty());
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
+
+
+
+    @Test
+    void check_missingParameter() {
+
+        // given: a valid configuration, including client ID / secret
+        ContractParametersCheckRequest checkRequest = MockUtils.aContractParametersCheckRequestBuilder()
+                .withAccountInfo(new HashMap<>())
+                .build();
+        // when: checking the configuration
+        Map<String, String> errors = service.check(checkRequest);
+
+        // then: error map is empty
+        assertFalse(errors.isEmpty());
+        assertTrue(errors.containsKey(ContractConfigurationKeys.MERCHANT_PID));
+        assertTrue(errors.containsKey(ContractConfigurationKeys.SECONDARY_MERCHANT_ID));
+        assertTrue(errors.containsKey(ContractConfigurationKeys.SECONDARY_MERCHANT_NAME));
+        assertTrue(errors.containsKey(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY));
+        assertTrue(errors.containsKey(ContractConfigurationKeys.SUPPLIER));
+    }
+
+
+// todo test des autres cas d'erreur (champs secondary et autre si possible)
+    /**
+     * ------------------------------------------------------------------------------------------------------------------
+     */
     @Test
     void check_invalidPrivateKey() throws IOException {
         // given: a valid configuration, including client ID / secret
@@ -147,7 +197,7 @@ class ConfigurationServiceImplTest {
 //        doThrow( PluginException.class ).when(httpClient).verifyConnection(any(RequestConfiguration.class));
 
         // when: checking the configuration
-        assertTrue(service.check( checkRequest ).size() > 0);
+        assertTrue(service.check(checkRequest).size() > 0);
 
     }
     /**------------------------------------------------------------------------------------------------------------------*/
