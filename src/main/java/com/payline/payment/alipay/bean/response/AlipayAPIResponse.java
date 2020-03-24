@@ -42,6 +42,22 @@ public class AlipayAPIResponse {
         return error;
     }
 
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+
+    public String getSign_type() {
+        return sign_type;
+    }
+
+    public void setSign_type(String sign_type) {
+        this.sign_type = sign_type;
+    }
+
     public void setError(String error)
     {
         this.error = error;

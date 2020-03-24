@@ -2,15 +2,23 @@ package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.MockUtils;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
+import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.http.HttpClient;
+import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
+import com.payline.pmapi.bean.refund.response.RefundResponse;
 import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
+import com.payline.pmapi.bean.refund.response.impl.RefundResponseSuccess;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import static org.mockito.ArgumentMatchers.any;
 
 class RefundServiceImplTest {
     @InjectMocks
@@ -22,27 +30,67 @@ class RefundServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        RequestConfiguration configuration = new RequestConfiguration(
-                MockUtils.aPaylinePaymentRequest().getContractConfiguration()
-                , MockUtils.aPaylinePaymentRequest().getEnvironment()
-                , MockUtils.aPaylinePaymentRequest().getPartnerConfiguration());
     }
     @Test
     void refundRequestOK() {
-        //RefundResponseSuccess response = (RefundResponseSuccess) service.refundRequest(MockUtils.aPaylineRefundRequest());
-        ///Assertions.assertEquals(RefundResponseSuccess.class, response.getClass());
+        String xmlOk = "<?xml version=\"1.0\" encoding=\"GBK\"?>\n" +
+                "<alipay>\n" +
+                "    <is_success>T</is_success>\n" +
+                "</alipay>";
+        AlipayAPIResponse alipayAPIResponse = AlipayAPIResponse.fromXml(xmlOk);
+        Mockito.doReturn(alipayAPIResponse).when(client).getRefund(any(), any());
+
+        RefundResponse response = service.refundRequest(MockUtils.aPaylineRefundRequest());
+        Assertions.assertEquals(RefundResponseSuccess.class, response.getClass());
+
+        RefundResponseSuccess responseSuccess = (RefundResponseSuccess) response;
+        Assertions.assertEquals("PAYLINE20200116103352", responseSuccess.getPartnerTransactionId());
+        Assertions.assertEquals("200", responseSuccess.getStatusCode());
     }
 
     @Test
     void refundRequestNotOK() {
-        RefundResponseFailure response = (RefundResponseFailure) service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
+        String xmlKo = "<?xml version=\"1.0\" encoding=\"GBK\"?>\n" +
+                "<alipay>\n" +
+                "    <is_success>F</is_success>\n" +
+                "    <error>ILLEGAL_ARGUMENT</error>\n" +
+                "    <sign>bXZsM4/TKsISBTHbiqgyQ6q8M30MNI+evD7JFg==</sign>\n" +
+                "    <sign_type>RSA2</sign_type>\n" +
+                "</alipay>";
+        AlipayAPIResponse alipayAPIResponse = AlipayAPIResponse.fromXml(xmlKo);
+        Mockito.doReturn(alipayAPIResponse).when(client).getRefund(any(), any());
+
+        RefundResponse response = service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseFailure.class, response.getClass());
+
+        RefundResponseFailure responseFailure = (RefundResponseFailure) response;
+        Assertions.assertEquals("ILLEGAL_ARGUMENT", responseFailure.getErrorCode());
+        Assertions.assertEquals(FailureCause.INVALID_DATA, responseFailure.getFailureCause());
     }
 
     @Test
-    void refundRequestMalformedURLException() {
-        RefundRequest.RefundRequestBuilder aPaylineRefundRequest = MockUtils.aPaylineRefundRequestBuilder().withPartnerConfiguration(MockUtils.aPartnerConfigurationMalformedURLException());
-        RefundResponseFailure response = (RefundResponseFailure)service.refundRequest(aPaylineRefundRequest.build());
+    void refundRequestPluginException() {
+        PluginException e = new PluginException("foo", FailureCause.REFUSED);
+        Mockito.doThrow(e).when(client).getRefund(any(), any());
+
+        RefundResponse response = service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseFailure.class, response.getClass());
+
+        RefundResponseFailure responseFailure = (RefundResponseFailure) response;
+        Assertions.assertEquals("foo", responseFailure.getErrorCode());
+        Assertions.assertEquals(FailureCause.REFUSED, responseFailure.getFailureCause());
+    }
+
+    @Test
+    void refundRequestRuntimeException() {
+        NullPointerException e = new NullPointerException("foo");
+        Mockito.doThrow(e).when(client).getRefund(any(), any());
+
+        RefundResponse response = service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
+        Assertions.assertEquals(RefundResponseFailure.class, response.getClass());
+
+        RefundResponseFailure responseFailure = (RefundResponseFailure) response;
+        Assertions.assertEquals("plugin error: NullPointerException: foo", responseFailure.getErrorCode());
+        Assertions.assertEquals(FailureCause.INTERNAL_ERROR, responseFailure.getFailureCause());
     }
 }

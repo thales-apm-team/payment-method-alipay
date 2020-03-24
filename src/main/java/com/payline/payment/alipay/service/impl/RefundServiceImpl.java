@@ -22,7 +22,7 @@ import static com.payline.payment.alipay.bean.object.ForexService.forex_refund;
 
 public class RefundServiceImpl implements RefundService {
     private static final Logger LOGGER = LogManager.getLogger(RefundServiceImpl.class);
-    private static final HttpClient client = HttpClient.getInstance();
+    private HttpClient client = HttpClient.getInstance();
 
     @Override
     public RefundResponse refundRequest(RefundRequest refundRequest) {
