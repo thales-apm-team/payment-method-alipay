@@ -30,7 +30,7 @@ import static com.payline.payment.alipay.bean.object.ForexService.create_forex_t
 
 public class PaymentServiceImpl implements PaymentService {
     private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
-    private static final SignatureUtils signatureUtils = SignatureUtils.getInstance();
+    private SignatureUtils signatureUtils = SignatureUtils.getInstance();
 
     @Override
     public PaymentResponse paymentRequest(PaymentRequest paymentRequest) {
@@ -64,7 +64,6 @@ public class PaymentServiceImpl implements PaymentService {
             // create the url to get
             Map<String, String> parameters = createForexTrade.getParametersList();
             Map<String, String> signedParameters = signatureUtils.getSignedParameters(configuration, parameters);
-//            Map<String, String> postFormData = signedParameters.stream().collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
 
             // return a PaymentResponseRedirect
             PaymentResponseRedirect.RedirectionRequest redirectionRequest = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder.aRedirectionRequest()
