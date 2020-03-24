@@ -1,6 +1,8 @@
 package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
+import com.payline.payment.alipay.bean.request.SingleTradeQuery;
+import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
@@ -20,13 +22,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.payline.payment.alipay.bean.object.ForexService.single_trade_query;
+import static com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest.GENERIC_ERROR;
+
 public class ConfigurationServiceImpl implements ConfigurationService {
     private static final Logger LOGGER = LogManager.getLogger(ConfigurationServiceImpl.class);
 
     private static final String I18N_CONTRACT_PREFIX = "contract.";
     private I18nService i18n = I18nService.getInstance();
     private ReleaseProperties releaseProperties = ReleaseProperties.getInstance();
-    private HttpClient httpClient = HttpClient.getInstance();
+    private HttpClient client = HttpClient.getInstance();
 
     /**
      * ------------------------------------------------------------------------------------------------------------------
@@ -92,6 +97,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      */
     @Override
     public Map<String, String> check(ContractParametersCheckRequest contractParametersCheckRequest) {
+        RequestConfiguration configuration = RequestConfiguration.build(contractParametersCheckRequest);
         final Map<String, String> errors = new HashMap<>();
 
         Map<String, String> accountInfo = contractParametersCheckRequest.getAccountInfo();
@@ -115,13 +121,26 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
 
         try {
-            // Try to retrieve an access token
-            httpClient.verifyConnection(requestConfiguration);
+            // create a fake single_trade_query request object with a wrong transactionId
+            SingleTradeQuery singleTradeQuery = SingleTradeQuery.SingleTradeQueryBuilder
+                    .aSingleTradeQuery()
+                    .withOutTradeNo("0")
+                    .withPartner(accountInfo.get(ContractConfigurationKeys.MERCHANT_PID))
+                    .withService(single_trade_query)
+                    .build();
+
+            // call get API
+            AlipayAPIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
+
+            // response should not be successful
+            if (!"TRADE_NOT_EXIST".equalsIgnoreCase(response.getError())) {
+                errors.put(GENERIC_ERROR, response.getError()); // todo etre plus parlant sur le message et le champs d'erreur
+            }
         } catch (PluginException e) {
             // If an exception is thrown, it means that the client private key is wrong
-            errors.put(ContractConfigurationKeys.MERCHANT_PID, e.getErrorCode());
+            errors.put(ContractConfigurationKeys.MERCHANT_PID, e.getErrorCode());   // todo c'est vraiment certain?
         } catch (RuntimeException e) {
-            errors.put("RuntimeException", e.getMessage()); // todo revoir le maessage a afficher
+            errors.put("RuntimeException", e.getMessage()); // todo revoir le message a afficher (en plus RuntimeException, c'est pas une clé du formulaire)
         }
         return errors;
     }

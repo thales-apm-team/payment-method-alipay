@@ -1,6 +1,7 @@
 package com.payline.payment.alipay;
 
-import com.payline.payment.alipay.utils.Constants;
+import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
+import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.payment.alipay.utils.http.StringResponse;
 import com.payline.pmapi.bean.common.Buyer;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
@@ -117,9 +118,9 @@ public class MockUtils {
     public static PartnerConfiguration aPartnerConfiguration() {
         Map<String, String> partnerConfigurationMap = new HashMap<>();
 
-        partnerConfigurationMap.put(Constants.PartnerConfigurationKeys.ALIPAY_URL, "https://mapi.alipaydev.com/gateway.do");
-        partnerConfigurationMap.put(Constants.PartnerConfigurationKeys.READ_TIMEOUT, "3000");
-        partnerConfigurationMap.put(Constants.PartnerConfigurationKeys.CONNECT_TIMEOUT, "3000");
+        partnerConfigurationMap.put(PartnerConfigurationKeys.ALIPAY_URL, "https://mapi.alipaydev.com/gateway.do");
+        partnerConfigurationMap.put(PartnerConfigurationKeys.READ_TIMEOUT, "3000");
+        partnerConfigurationMap.put(PartnerConfigurationKeys.CONNECT_TIMEOUT, "3000");
 
         Map<String, String> sensitiveConfigurationMap = new HashMap<>();
 
@@ -132,7 +133,7 @@ public class MockUtils {
     public static PartnerConfiguration aPartnerConfigurationMalformedURLException() {
         Map<String, String> partnerConfigurationMap = new HashMap<>();
 
-        partnerConfigurationMap.put(Constants.PartnerConfigurationKeys.ALIPAY_URL, "htp:/");
+        partnerConfigurationMap.put(PartnerConfigurationKeys.ALIPAY_URL, "htp:/");
 
         Map<String, String> sensitiveConfigurationMap = new HashMap<>();
 
@@ -144,7 +145,7 @@ public class MockUtils {
     public static ContractConfiguration aContractConfigurationToVerifyConnection() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.MERCHAND_PID, new ContractProperty("2088621926786355"));
+        contractProperties.put(ContractConfigurationKeys.MERCHANT_PID, new ContractProperty("2088621926786355"));
 
         return new ContractConfiguration("Alipay", contractProperties);
     }
@@ -154,8 +155,7 @@ public class MockUtils {
     public static ContractConfiguration aContractConfiguration() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.MERCHAND_PID, new ContractProperty("2088621926786355"));
-        contractProperties.put(Constants.ContractConfigurationKeys.PARTNER_URL, new ContractProperty("http://notification.com"));
+        contractProperties.put(ContractConfigurationKeys.MERCHANT_PID, new ContractProperty("2088621926786355"));
         return new ContractConfiguration("Alipay", contractProperties);
     }
     /**
@@ -164,7 +164,7 @@ public class MockUtils {
     public static ContractConfiguration aContractConfigurationUnsupportedEncodingException() {
 
         Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(Constants.ContractConfigurationKeys.MERCHAND_PID, new ContractProperty("2088621926786355"));
+        contractProperties.put(ContractConfigurationKeys.MERCHANT_PID, new ContractProperty("2088621926786355"));
         return new ContractConfiguration("Alipay", contractProperties);
     }
     /**

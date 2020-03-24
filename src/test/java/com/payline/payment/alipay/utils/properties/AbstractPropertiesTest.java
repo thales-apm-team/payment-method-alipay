@@ -3,7 +3,7 @@ package com.payline.payment.alipay.utils.properties;
 import com.payline.payment.alipay.exception.PluginException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AbstractPropertiesTest {
 

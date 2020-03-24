@@ -4,7 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static com.payline.payment.alipay.bean.object.Trade.TradeStatus.TRADE_CLOSED;
 
 class TradeTest {
     private Trade trade = new Trade();
@@ -157,7 +157,7 @@ class TradeTest {
 
     @Test
     void setTrade_status() {
-        String tradeStatus = "TRADE_CLOSED";
+        Trade.TradeStatus tradeStatus = TRADE_CLOSED;
         trade.setTrade_status(tradeStatus);
         Assertions.assertEquals(tradeStatus, trade.getTrade_status());
     }

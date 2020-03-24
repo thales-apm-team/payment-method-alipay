@@ -127,7 +127,7 @@ public class NotificationServiceImpl implements NotificationService {
     private PaymentResponse getStatus(RequestConfiguration configuration, String transactionId) {
         PaymentResponse paymentResponse;
 
-        // create c request object
+        // create single_trade_query request object
         SingleTradeQuery singleTradeQuery = SingleTradeQuery.SingleTradeQueryBuilder
                 .aSingleTradeQuery()
                 .withOutTradeNo(transactionId)

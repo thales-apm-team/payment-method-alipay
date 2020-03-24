@@ -1,7 +1,5 @@
 package com.payline.payment.alipay.utils.http;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.bean.response.NotifyResponse;
@@ -9,7 +7,6 @@ import com.payline.payment.alipay.exception.InvalidDataException;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.SignatureUtils;
-import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.logger.LogManager;
@@ -21,32 +18,18 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 
 public class HttpClient {
-
     private static final Logger LOGGER = LogManager.getLogger(HttpClient.class);
-    private Gson parser;
-    // Exceptions messages
-    private static final String SERVICE_URL_ERROR = "Service URL is invalid";
-    private static final String SYNTAX_ENCODING = "Syntax Exception";
-    /**
-     * The number of time the client must retry to send the request if it doesn't obtain a response.
-     */
-    private int retries;
 
     private org.apache.http.client.HttpClient client;
 
@@ -56,13 +39,11 @@ public class HttpClient {
      * ------------------------------------------------------------------------------------------------------------------
      */
     HttpClient() {
-
         // instantiate Apache HTTP client
         this.client = HttpClientBuilder.create()
                 .useSystemProperties()
                 .setSSLSocketFactory(new SSLConnectionSocketFactory(HttpsURLConnection.getDefaultSSLSocketFactory(), SSLConnectionSocketFactory.getDefaultHostnameVerifier()))
                 .build();
-        this.parser = new GsonBuilder().create();
 
     }
 
@@ -93,8 +74,8 @@ public class HttpClient {
     StringResponse execute(HttpRequestBase httpRequest) {
         StringResponse strResponse = null;
         int attempts = 1;
-
         int retries = 3;
+
         while (strResponse == null && attempts <= retries) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Start call to partner API (attempt {}) :" + System.lineSeparator() + PluginUtils.requestToString(httpRequest), attempts);
@@ -118,17 +99,7 @@ public class HttpClient {
         return strResponse;
     }
     /**------------------------------------------------------------------------------------------------------------------*/
-    /**
-     * Verify if API url are present
-     *
-     * @param requestConfiguration
-     */
-    private void verifyPartnerConfigurationURL(RequestConfiguration requestConfiguration) {
-        if (requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL) == null) {
-            throw new InvalidDataException("Missing API url from partner configuration (sensitive properties)");
-        }
 
-    }
 
     /**
      * Build and send request to verify a notification by its id
@@ -152,10 +123,7 @@ public class HttpClient {
     public AlipayAPIResponse getTransactionStatus(RequestConfiguration requestConfiguration, ArrayList<NameValuePair> params) {
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
-
-        AlipayAPIResponse alipayAPIResponse = AlipayAPIResponse.fromXml(response.getContent());
-
-        return alipayAPIResponse;
+        return AlipayAPIResponse.fromXml(response.getContent());
     }
 
     /**
@@ -170,7 +138,7 @@ public class HttpClient {
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
         AlipayAPIResponse alipayAPIResponse;
-        if (response.getStatusCode() == 200) {
+        if (response.getStatusCode() == 200) {  // todo pk on fait ca ici et pas pour les autres appels?
             alipayAPIResponse = AlipayAPIResponse.fromXml(response.getContent());
         } else {
             alipayAPIResponse = new AlipayAPIResponse();
@@ -182,51 +150,7 @@ public class HttpClient {
         return alipayAPIResponse;
     }
 
-    /**
-     * Build parameters string for create_forex_trade request
-     *
-     * @param parametersList
-     * @return Parameters string for redirecting post request
-     */
-    public LinkedHashMap<String, String> getParametersPayment(ArrayList<NameValuePair> parametersList) throws UnsupportedEncodingException {
-        //Create parameters list
-        List<NameValuePair> parametersListWithSign = SignatureUtils.getSignedParameters(parametersList);
-
-        LinkedHashMap<String, String> parametersListForResponse = new LinkedHashMap<>();
-        for (NameValuePair parameter : parametersListWithSign) {
-            parametersListForResponse.put(parameter.getName(), URLEncoder.encode(parameter.getValue(), StandardCharsets.UTF_8.toString()));
-        }
-        return parametersListForResponse;
-    }
     /**------------------------------------------------------------------------------------------------------------------*/
-    /**
-     * Verify API connection
-     *
-     * @param requestConfiguration
-     * @return True if API connection work, otherwise false
-     */
-    public Boolean verifyConnection(RequestConfiguration requestConfiguration) {
-
-        // Create parameters
-        ArrayList<NameValuePair> params = new ArrayList<>();
-
-        params.add(new BasicNameValuePair("_input_charset", "utf-8"));
-        params.add(new BasicNameValuePair("out_trade_no", "0"));
-        params.add(new BasicNameValuePair("partner", requestConfiguration.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue()));
-        params.add(new BasicNameValuePair("service", "single_trade_query"));
-
-        // Get the result of the request
-        StringResponse response = getWithSignature(requestConfiguration, params);
-
-        // Check the response content
-        if (response.getContent() == null) {
-            LOGGER.error("No response body");
-            return false;
-        }
-
-        return response.getContent().contains("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<alipay><is_success>F</is_success><error>TRADE_NOT_EXIST</error></alipay>");
-    }
 
     /**
      * Manage get API call with signature
@@ -235,52 +159,57 @@ public class HttpClient {
      * @return
      */
     public StringResponse getWithSignature(RequestConfiguration requestConfiguration, List<NameValuePair> params) {
-        URI uri;
-        URI baseUrl;
-
-        // Check if API url is present
-        verifyPartnerConfigurationURL(requestConfiguration);
-
-        // Get the API URL
         try {
-            baseUrl = new URI(requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL));
+            // Create the HttpGet url with parameters
+            URI baseUrl = constructURL(requestConfiguration);
+            URI uri = new URIBuilder(baseUrl)
+                    .setParameters(SignatureUtils.getSignedParameters(params))
+                    .build();
+
+            // Create the HttpGet request
+            HttpGet httpGet = new HttpGet(uri);
+            httpGet.setConfig(createRequestConfig(requestConfiguration));
+
+            // Execute request
+            return this.execute(httpGet);
+
         } catch (URISyntaxException e) {
-            throw new InvalidDataException(SERVICE_URL_ERROR, e);
+            throw new InvalidDataException("Syntax Exception", e);
+        }
+    }
+
+    /**
+     * Construct an URI url from a String given in PartnerConfiguration
+     *
+     * @param requestConfiguration Contain the String to convert
+     * @return
+     */
+    private URI constructURL(RequestConfiguration requestConfiguration) {
+        // check if URL exists in partnerConfiguration
+        if (requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL) == null) {
+            throw new InvalidDataException("Missing API url from partner configuration");
         }
 
-        // Create the pre-signing string
-        String preSigning = SignatureUtils.preSigningString(params);
-
-        // Create the RSA2 signature
-        String sha256withRsa = SignatureUtils.signSHA256withRSA(preSigning);
-
-        // Add the signature to the parameters
-        params.add(new BasicNameValuePair("sign", sha256withRsa));
-        params.add(new BasicNameValuePair("sign_type", "RSA2"));
-
-        // Create the HttpGet url with parameters
         try {
-            uri = new URIBuilder(baseUrl).setParameters(params).build();
+            return new URI(requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL));
         } catch (URISyntaxException e) {
-            throw new InvalidDataException(SYNTAX_ENCODING, e);
+            throw new InvalidDataException("Service URL is invalid", e);
         }
+    }
 
-        // Create the HttpGet request
-        HttpGet httpGet = new HttpGet(uri);
-
+    private RequestConfig createRequestConfig(RequestConfiguration requestConfiguration) {
         // Timeout
         final String readTimeout = requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.READ_TIMEOUT);
         final String connectTimeout = requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.CONNECT_TIMEOUT);
 
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(Integer.valueOf(connectTimeout))
-                .setSocketTimeout(Integer.valueOf(readTimeout))
+        if (PluginUtils.isEmpty(readTimeout) | PluginUtils.isEmpty(connectTimeout)) {
+            throw new InvalidDataException("Missing timeout from partner configuration");
+        }
+
+        return RequestConfig.custom()
+                .setConnectTimeout(Integer.parseInt(connectTimeout))
+                .setSocketTimeout(Integer.parseInt(readTimeout))
                 .build();
-
-        httpGet.setConfig(requestConfig);
-
-        // Execute request
-        return this.execute(httpGet);
     }
 
 }

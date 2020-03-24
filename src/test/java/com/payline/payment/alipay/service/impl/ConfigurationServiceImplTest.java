@@ -6,8 +6,6 @@ import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.payment.alipay.utils.properties.ReleaseProperties;
 import com.payline.pmapi.bean.configuration.ReleaseInformation;
-import com.payline.pmapi.bean.configuration.parameter.AbstractParameter;
-import com.payline.pmapi.bean.configuration.parameter.impl.ListBoxParameter;
 import com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,7 +20,9 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Month;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -144,7 +144,7 @@ class ConfigurationServiceImplTest {
         // given: a valid configuration, including client ID / secret
         ContractParametersCheckRequest checkRequest = MockUtils.aContractParametersCheckRequest();
 
-        doThrow( PluginException.class ).when(httpClient).verifyConnection(any(RequestConfiguration.class));
+//        doThrow( PluginException.class ).when(httpClient).verifyConnection(any(RequestConfiguration.class));
 
         // when: checking the configuration
         assertTrue(service.check( checkRequest ).size() > 0);

@@ -2,9 +2,8 @@ package com.payline.payment.alipay.utils.http;
 
 import com.payline.payment.alipay.MockUtils;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
-import com.payline.payment.alipay.exception.InvalidDataException;
 import com.payline.payment.alipay.exception.PluginException;
-import com.payline.payment.alipay.utils.Constants;
+import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.pmapi.bean.configuration.PartnerConfiguration;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -16,9 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import static com.payline.payment.alipay.utils.http.HttpTestUtils.mockHttpResponse;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -98,41 +99,10 @@ class HttpClientTest {
     }
     /**------------------------------------------------------------------------------------------------------------------*/
 
-    @Test
-    void verifyConnection_EmptyResponseContent() throws IOException {
-        // given: the API base URL is missing from the partner configuration
-        RequestConfiguration requestConfiguration = new RequestConfiguration(MockUtils.aContractConfigurationToVerifyConnection(), MockUtils.anEnvironment(), MockUtils.aPartnerConfiguration());
-
-        StringResponse response = HttpTestUtils.mockStringResponse(200, "OK", null, null);
-
-        doReturn(response).when(httpClient).execute(any(HttpRequestBase.class));
-
-        assertFalse(httpClient.verifyConnection(requestConfiguration));
-
-        verify(http, never()).execute(any(HttpRequestBase.class));
-    }
-    /**------------------------------------------------------------------------------------------------------------------*/
-
-    @Test
-    void verifyConnection_GoodResponseContent() throws IOException {
-        // given: the API base URL is missing from the partner configuration
-        RequestConfiguration requestConfiguration = new RequestConfiguration(MockUtils.aContractConfigurationToVerifyConnection(), MockUtils.anEnvironment(), MockUtils.aPartnerConfiguration());
-
-        String content= "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<alipay><is_success>F</is_success><error>TRADE_NOT_EXIST</error></alipay>";
-        StringResponse response = HttpTestUtils.mockStringResponse(200, "OK", content, null);
-
-        doReturn(response).when(httpClient).execute(any(HttpRequestBase.class));
-
-        assertTrue(httpClient.verifyConnection(requestConfiguration));
-
-        verify(http, never()).execute(any(HttpRequestBase.class));
-    }
-    /**------------------------------------------------------------------------------------------------------------------*/
-
     static PartnerConfiguration anInvalidPartnerConfiguration() {
         Map<String, String> partnerConfigurationMap = new HashMap<>();
 
-        partnerConfigurationMap.put(Constants.PartnerConfigurationKeys.ALIPAY_URL, "://mapi.alipaydev.com/gateway.do");
+        partnerConfigurationMap.put(PartnerConfigurationKeys.ALIPAY_URL, "://mapi.alipaydev.com/gateway.do");
 
         Map<String, String> sensitiveConfigurationMap = new HashMap<>();
 

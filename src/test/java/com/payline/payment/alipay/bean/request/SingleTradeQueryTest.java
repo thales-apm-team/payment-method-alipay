@@ -1,7 +1,10 @@
 package com.payline.payment.alipay.bean.request;
 
+import com.payline.payment.alipay.bean.object.ForexService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static com.payline.payment.alipay.bean.object.ForexService.single_trade_query;
 
 public class SingleTradeQueryTest {
     private SingleTradeQuery singleTradeQuery = new SingleTradeQuery();
@@ -28,7 +31,7 @@ public class SingleTradeQueryTest {
 
     @Test
     void getService() {
-        String service = "single_trade_query";
+        ForexService service = single_trade_query;
         singleTradeQuery.service = service;
         Assertions.assertEquals(service, singleTradeQuery.getService());
     }

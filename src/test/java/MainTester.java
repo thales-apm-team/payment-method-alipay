@@ -1,6 +1,6 @@
 import com.payline.payment.alipay.MockUtils;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
+import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,8 +21,8 @@ class MainTester {
             RequestConfiguration requestConfiguration = new RequestConfiguration(MockUtils.aContractConfigurationToVerifyConnection(), MockUtils.anEnvironment(), MockUtils.aPartnerConfiguration());
 
             // Test : VerifyPrivateKey
-            connectionStatus = HTTP_CLIENT.verifyConnection(requestConfiguration);
-            LOGGER.info("Private Key Status : " + connectionStatus);
+//            connectionStatus = HTTP_CLIENT.verifyConnection(requestConfiguration);
+//            LOGGER.info("Private Key Status : " + connectionStatus);
 
 
             // Test : Single trade query

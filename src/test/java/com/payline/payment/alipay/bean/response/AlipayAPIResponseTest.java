@@ -1,7 +1,5 @@
 package com.payline.payment.alipay.bean.response;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.payline.payment.alipay.bean.object.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
