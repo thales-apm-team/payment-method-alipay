@@ -1,5 +1,6 @@
 package com.payline.payment.alipay.service.impl;
 
+import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.bean.object.ForexService;
 import com.payline.payment.alipay.bean.request.CreateForexTrade;
 import com.payline.payment.alipay.exception.PluginException;
@@ -7,7 +8,6 @@ import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.SignatureUtils;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
-import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
@@ -30,11 +30,11 @@ import static com.payline.payment.alipay.bean.object.ForexService.create_forex_t
 
 public class PaymentServiceImpl implements PaymentService {
     private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
-    private static final HttpClient client = HttpClient.getInstance();
-    // todo commentaire en anglais
+    private static final SignatureUtils signatureUtils = SignatureUtils.getInstance();
 
     @Override
     public PaymentResponse paymentRequest(PaymentRequest paymentRequest) {
+        RequestConfiguration configuration = RequestConfiguration.build(paymentRequest);
         PaymentResponse paymentResponse;
         try {
             ForexService service;
@@ -62,15 +62,15 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
 
             // create the url to get
-            ArrayList<NameValuePair> parameters = createForexTrade.getParametersList();
-            List<NameValuePair> signedParameters = SignatureUtils.getSignedParameters(parameters);
-            Map<String, String> postFormData = signedParameters.stream().collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
+            Map<String, String> parameters = createForexTrade.getParametersList();
+            Map<String, String> signedParameters = signatureUtils.getSignedParameters(configuration, parameters);
+//            Map<String, String> postFormData = signedParameters.stream().collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
 
             // return a PaymentResponseRedirect
             PaymentResponseRedirect.RedirectionRequest redirectionRequest = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder.aRedirectionRequest()
                     .withRequestType(PaymentResponseRedirect.RedirectionRequest.RequestType.POST)
                     .withUrl(new URL(paymentRequest.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL)))
-                    .withPostFormData(postFormData)
+                    .withPostFormData(signedParameters)
                     .build();
 
             paymentResponse = PaymentResponseRedirect.PaymentResponseRedirectBuilder.aPaymentResponseRedirect()

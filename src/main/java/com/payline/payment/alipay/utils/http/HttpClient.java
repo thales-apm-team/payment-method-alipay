@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -26,14 +27,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class HttpClient {
     private static final Logger LOGGER = LogManager.getLogger(HttpClient.class);
 
     private org.apache.http.client.HttpClient client;
-
-    // --- Singleton Holder pattern + initialization BEGIN
+    private SignatureUtils signatureUtils = SignatureUtils.getInstance();
 
     /**
      * ------------------------------------------------------------------------------------------------------------------
@@ -108,7 +109,7 @@ public class HttpClient {
      * @param requestConfiguration
      * @param params
      */
-    public NotifyResponse notificationIsVerified(RequestConfiguration requestConfiguration, ArrayList<NameValuePair> params) {
+    public NotifyResponse notificationIsVerified(RequestConfiguration requestConfiguration, Map<String, String> params) {
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
         return NotifyResponse.valueOf(response.getContent().toUpperCase());
@@ -120,7 +121,7 @@ public class HttpClient {
      * @param requestConfiguration
      * @return The response converted as a {@link AlipayAPIResponse}.
      */
-    public AlipayAPIResponse getTransactionStatus(RequestConfiguration requestConfiguration, ArrayList<NameValuePair> params) {
+    public AlipayAPIResponse getTransactionStatus(RequestConfiguration requestConfiguration, Map<String, String> params) {
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
         return AlipayAPIResponse.fromXml(response.getContent());
@@ -133,7 +134,7 @@ public class HttpClient {
      * @param params
      * @return The response converted as a {@link AlipayAPIResponse}.
      */
-    public AlipayAPIResponse getRefund(RequestConfiguration requestConfiguration, ArrayList<NameValuePair> params) {
+    public AlipayAPIResponse getRefund(RequestConfiguration requestConfiguration, Map<String, String> params) {
 
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
@@ -158,20 +159,29 @@ public class HttpClient {
      * @param requestConfiguration
      * @return
      */
-    public StringResponse getWithSignature(RequestConfiguration requestConfiguration, List<NameValuePair> params) {
+    public StringResponse getWithSignature(RequestConfiguration requestConfiguration, Map<String, String> params) {
         try {
             // Create the HttpGet url with parameters
             URI baseUrl = constructURL(requestConfiguration);
+            List<NameValuePair> list = fromMap(signatureUtils.getSignedParameters(requestConfiguration, params));
             URI uri = new URIBuilder(baseUrl)
-                    .setParameters(SignatureUtils.getSignedParameters(params))
+                    .setParameters(list)
                     .build();
 
             // Create the HttpGet request
             HttpGet httpGet = new HttpGet(uri);
-            httpGet.setConfig(createRequestConfig(requestConfiguration));
+            httpGet.setConfig(createHttpRequestConfig(requestConfiguration));
 
             // Execute request
-            return this.execute(httpGet);
+            StringResponse response = this.execute(httpGet);
+
+            // signature verification
+            Map responseMap = PluginUtils.createMapFromString(response.getContent());
+            if (!signatureUtils.getVerification(requestConfiguration, responseMap)){
+                throw new InvalidDataException("Received signature is not valid");
+            }
+            return response;
+
 
         } catch (URISyntaxException e) {
             throw new InvalidDataException("Syntax Exception", e);
@@ -186,18 +196,19 @@ public class HttpClient {
      */
     private URI constructURL(RequestConfiguration requestConfiguration) {
         // check if URL exists in partnerConfiguration
-        if (requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL) == null) {
+        String url = requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL);
+        if (PluginUtils.isEmpty(url)) {
             throw new InvalidDataException("Missing API url from partner configuration");
         }
 
         try {
-            return new URI(requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL));
+            return new URI(url);
         } catch (URISyntaxException e) {
             throw new InvalidDataException("Service URL is invalid", e);
         }
     }
 
-    private RequestConfig createRequestConfig(RequestConfiguration requestConfiguration) {
+    private RequestConfig createHttpRequestConfig(RequestConfiguration requestConfiguration) {
         // Timeout
         final String readTimeout = requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.READ_TIMEOUT);
         final String connectTimeout = requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.CONNECT_TIMEOUT);
@@ -210,6 +221,17 @@ public class HttpClient {
                 .setConnectTimeout(Integer.parseInt(connectTimeout))
                 .setSocketTimeout(Integer.parseInt(readTimeout))
                 .build();
+    }
+
+
+    private static List<NameValuePair> fromMap(Map<String, String> map) { // todo on doit pouvoir le faire en java8
+        List<NameValuePair> list = new ArrayList<>();
+
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            list.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+
+        return list;
     }
 
 }

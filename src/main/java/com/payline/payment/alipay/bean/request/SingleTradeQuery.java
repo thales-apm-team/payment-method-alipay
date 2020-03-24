@@ -5,6 +5,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SingleTradeQuery extends Request {
     public static class SingleTradeQueryBuilder {
@@ -34,13 +36,13 @@ public class SingleTradeQuery extends Request {
         }
     }
 
-    public ArrayList<NameValuePair> getParametersList() {
+    public Map<String, String> getParametersList() {
         //Create parameters list
-        ArrayList<NameValuePair> list = new ArrayList<>();
-        list.add(new BasicNameValuePair("_input_charset", this._input_charset));
-        list.add(new BasicNameValuePair("out_trade_no", this.out_trade_no));
-        list.add(new BasicNameValuePair("partner", this.partner));
-        list.add(new BasicNameValuePair("service", this.service.name()));
-        return list;
+        Map<String, String> params = new HashMap<>();
+        params.put("_input_charset", this._input_charset);
+        params.put("out_trade_no", this.out_trade_no);
+        params.put("partner", this.partner);
+        params.put("service", this.service.name());
+        return params;
     }
 }

@@ -12,9 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -147,15 +145,6 @@ public class PluginUtils {
         return value == null || value.isEmpty();
     }
 
-    /**
-     *
-     */
-    public static enum VerificationResponse {
-        TRUE,
-        FALSE,
-        INVALID;
-    }
-
     public static String getStringUsingRegex(String regex, String data) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(data);
@@ -176,4 +165,23 @@ public class PluginUtils {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
         return format.format(date);
     }
+
+    public static Map<String,String> createMapFromString(String message){
+        Pattern pattern = Pattern.compile("(.+)=(.+)");
+        Matcher matcher;
+
+        Map<String,String> map = new HashMap<>();
+
+        String[] keyValuePairs = message.split("&");
+        for (String kv : keyValuePairs) {
+            matcher = pattern.matcher(kv);
+            matcher.find();
+            map.put(matcher.group(1), matcher.group(2));
+        }
+
+        return map;
+    }
+
+
+
 }

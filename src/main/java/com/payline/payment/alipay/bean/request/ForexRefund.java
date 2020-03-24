@@ -5,6 +5,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ForexRefund extends Request {
     String currency;
@@ -60,19 +62,19 @@ public class ForexRefund extends Request {
         }
     }
 
-    public ArrayList<NameValuePair> getParametersList() {
+    public Map<String, String> getParametersList() {
         //Create parameters list
-        ArrayList<NameValuePair> list = new ArrayList<>();
-        list.add(new BasicNameValuePair("_input_charset", this._input_charset));
-        list.add(new BasicNameValuePair("currency", this.currency));
-        list.add(new BasicNameValuePair("gmt_return", this.gmt_return));
-        list.add(new BasicNameValuePair("is_sync", this.is_sync));
-        list.add(new BasicNameValuePair("out_return_no", this.out_return_no));
-        list.add(new BasicNameValuePair("out_trade_no", this.out_trade_no));
-        list.add(new BasicNameValuePair("partner", this.partner));
-        list.add(new BasicNameValuePair("product_code", this.product_code));
-        list.add(new BasicNameValuePair("return_amount", this.return_amount));
-        list.add(new BasicNameValuePair("service", this.service.name()));
-        return list;
+        Map<String, String>  params = new HashMap<>();
+        params.put("_input_charset", this._input_charset);
+        params.put("currency", this.currency);
+        params.put("gmt_return", this.gmt_return);
+        params.put("is_sync", this.is_sync);
+        params.put("out_return_no", this.out_return_no);
+        params.put("out_trade_no", this.out_trade_no);
+        params.put("partner", this.partner);
+        params.put("product_code", this.product_code);
+        params.put("return_amount", this.return_amount);
+        params.put("service", this.service.name());
+        return params;
     }
 }
