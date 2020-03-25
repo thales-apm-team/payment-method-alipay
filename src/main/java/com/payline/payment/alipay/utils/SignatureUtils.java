@@ -58,7 +58,7 @@ public class SignatureUtils {
                 .stream()
                 .filter(e -> !e.getKey().equals("sign_type"))
                 .filter(e -> !e.getKey().equals("sign"))
-                .sorted()
+                .sorted(Map.Entry.comparingByKey())
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.joining("&"));
     }

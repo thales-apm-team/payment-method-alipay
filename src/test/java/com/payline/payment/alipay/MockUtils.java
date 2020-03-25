@@ -101,6 +101,35 @@ public class MockUtils {
         partnerConfigurationMap.put(PartnerConfigurationKeys.ALIPAY_URL, "https://mapi.alipaydev.com/gateway.do");
         partnerConfigurationMap.put(PartnerConfigurationKeys.READ_TIMEOUT, "3000");
         partnerConfigurationMap.put(PartnerConfigurationKeys.CONNECT_TIMEOUT, "3000");
+        partnerConfigurationMap.put(PartnerConfigurationKeys.PAYLINE_PRIVATE_KEY, "-----BEGIN PRIVATE KEY-----\n" +
+                "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCmq9r/p/D3qnzK\n" +
+                "bga/FEDlW/XbRkfUziTIM8HIOqSTxrGrDDxXqYNl9hYMcjw1DQbnYAH7ISoNkeyb\n" +
+                "OPnkeGbhcvDPBcqIurntOcTqmD5LkS3kiDChDiUDURa6dhDyHXvbEKnCltgYu+we\n" +
+                "kgskbbe5xtw3VIifpSb3v98o+LkbVGcBsMGWBH1SfWDNcHvSWySzXtBkl+EQL7sp\n" +
+                "z7adRcmtL3NxTgRssiD61V7NibwtfaQg0Lpql461w6Oj11nIw03paxpLlcRCF/v5\n" +
+                "1yZMvCNitTJ7mDpKiH2Pnb25nbKjcQZPdHKEZzJOfjsw1xnbhTWao5nOTOK4yXUu\n" +
+                "OxcXQPItAgMBAAECggEANtaWoMVmAGcE1inraFVGoPBn7TSrj7Yf3gtBeBrraX/X\n" +
+                "lzrYY9NvW03jpUa0zpOxsNEi9bjMuFhJ7CyL9AM1fnouBz+VivU9FXOLedCLtptW\n" +
+                "6TlyHpujy/qTKtiL7M2MoeBSqqatBT5XixtsNRkweRyX+lCC/1v8fUmRKE7lwLq1\n" +
+                "T+g+H5Xd/nK/UDPKsbF2z//GsqYlGnIoE74MN/JD4ZeRaaT/fgIa3UC+epUiLV5D\n" +
+                "wFL8KVK/SzazqYSeYonGo/bBlgV3M4YrHbaQ3PaudCKq98cxiP6EBcsn4acn3iGB\n" +
+                "OdUZ+OgcoP04eCdLcFRmwhvyKzDP3gfeGclCG5xWdQKBgQDcShMBP1CUIRGBjiuJ\n" +
+                "OGead6HgYPTVBzIffKqISwEhCWBh6tx6bnL3WeNN/E+/H+7yKIiRRObZJRZfZdAG\n" +
+                "TCkS7LuCCRQj55KVahw4XRfyFQ/hELIKihxSrMlyc/oBSt+NsAZOwFy69/KPwqcC\n" +
+                "fWd8McMVCHJYMD4lV7lQEsKNDwKBgQDBsKcMAI7sEwIFv87qZFWrYwo0kjAprEcU\n" +
+                "MS+tKfTVCyajPexd+JOcaqigpR0zh0ohw2T4ASwpKkRy0HT0ftgqXnv61lOMOvjo\n" +
+                "0AijUCfixV0NATYF9ZXo8boMaTtXh4rFYmQ0e1KedKrH/Y8oH66imN4wOrlGSz1G\n" +
+                "P9IkOkgFAwKBgESzmV+/NkssUQBdrXg7Lhx/iO2ob1LszpYBVFHzSmPaP8Pp8l8A\n" +
+                "iTxZPUm6EcjilavSNl1P5sr8BRE1eH4uTHUJfaUdXbmg5BdTI3/0kJ5AMVaY1V3y\n" +
+                "Gskx+BWI1ASJLFVM+3qeBY2N/IkXROzC3X5fKp8ppjeYvBj7VeECKMjDAoGBAIgK\n" +
+                "mpncfoYjp6UAHsYU6PMy4gUgtMFgZqAxF+qJcJR+e4nmwXETWiJf68bBkiwSFyh1\n" +
+                "xCJJOIpFTMRT1AGyYgQITw5UoWP6O7/R9m82qn0l4IB03Ev9PWja97El7G9DHV4c\n" +
+                "CIOwJsxy500GtBkbf55mvpCjfmR4DjacNu4JHXKfAoGAJ+PyPq4GsjYSixZGhAJk\n" +
+                "reTCwSt5TIalupUgMqZuy/B+FI2VwZcO2RA+TWRPwtBjOC8v7h3ymZ2k/Va0TBrE\n" +
+                "fCF/rfmku/z9yDDuor5NGjIfe/0dbB+nRKVSSpsmznIlxnSIFgeZx4D5Tchqd+Cy\n" +
+                "SHF1PJqewhePY9xfKAMSXUo=\n" +
+                "-----END PRIVATE KEY-----");
+        partnerConfigurationMap.put(PartnerConfigurationKeys.PUBLIC_KEY, "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvXgO/yLfPcJEgYy5EE7G4sXuzOQ4ki+5dFC2m/HBV5RUfAqoWWNF4ZXLc93C0IbnqRdPiX0C1cYne3cqQOY2NH6BiKEOVKyblI5loSobp5sfJszbIcvGcPmbTcOQsze1JR0at6sDeRarfyu4fwSCbVT6r39kVF/HVa1pGEuGU0XkTpfPCXZRFL50Xdm8+gRyRNgOw3BZfXggziWfg1P9RsLGfl/P2T9FUn+LXsBvY/i8EuNgyCia6Ht+Q/mXK0B2Svxauw/HZS4VvZbtNlOA0MD2oQBj363ytdXjgdaeZoDAD0b1FaQ+amwWjAVHvwW7lVkfKVZsCbBG3RHcT/YljwIDAQAB");
 
         Map<String, String> sensitiveConfigurationMap = new HashMap<>();
 
