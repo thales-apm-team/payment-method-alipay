@@ -5,6 +5,7 @@ import com.payline.payment.alipay.bean.request.ForexRefund;
 import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.PluginUtils;
+import com.payline.payment.alipay.utils.business.ErrorUtils;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -57,7 +58,7 @@ public class RefundServiceImpl implements RefundService {
             }else {
                 refundResponse = RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
                         .withErrorCode(refundAlipayAPIResponse.getError())
-                        .withFailureCause(PluginUtils.getFailureCause(refundAlipayAPIResponse.getError())) // todo bouger ca dans une classe business
+                        .withFailureCause(ErrorUtils.getFailureCause(refundAlipayAPIResponse.getError()))
                         .build();
             }
 

@@ -27,6 +27,8 @@ import com.payline.pmapi.logger.LogManager;
 import com.payline.pmapi.service.NotificationService;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Map;
+
 import static com.payline.payment.alipay.bean.object.ForexService.notify_verify;
 import static com.payline.payment.alipay.bean.object.ForexService.single_trade_query;
 
@@ -44,8 +46,10 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             configuration = new RequestConfiguration(request.getContractConfiguration(), request.getEnvironment(), request.getPartnerConfiguration());
             String content = PluginUtils.inputStreamToString(request.getContent());
-            transactionId = PluginUtils.getStringUsingRegex("out_trade_no=([^&]+)&", content);
-            String notificationId = PluginUtils.getStringUsingRegex("notify_id=(.{34})", content);
+
+            Map<String,String> val = PluginUtils.createMapFromString(content);
+            transactionId = val.get("out_trade_no");
+            String notificationId = val.get("notify_id"); //PluginUtils.getStringUsingRegex("notify_id=(.{34})", content);
 
             if (PluginUtils.isEmpty(transactionId)) {
                 transactionId = "UNKNOWN";
