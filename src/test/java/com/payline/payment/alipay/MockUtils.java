@@ -1,5 +1,6 @@
 package com.payline.payment.alipay;
 
+import com.payline.payment.alipay.bean.object.Trade;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.payment.alipay.utils.http.StringResponse;
@@ -34,34 +35,9 @@ public class MockUtils {
                 , null);
         return stringResponse;
     }
-    public static String validNotificationBodyTemplate = "{" +
-            "\"currency\": \"USD\"," +
-            "\"notify_id\": \"1\","+
-            "\"out_trade_no\": \"PAYLINE20200116105303\"," +
-            "\"total_fee\": \"0.01\"," +
-            "\"trade_no\": \"PAYLINE20200116105303\"," +
-            "\"trade_status\": \"TRADE_STATUS\"," +
-            "\"sign\": \"signaturelulz\"," +
-            "\"sign_type\": \"RSA2\"}";
-    public static String invalidNotificationBodyTemplate = "{{" +
-            "\"currency\" \"USD\"," +
-            "\"notify_id\" \"1\","+
-            "\"out_trade_no\"\"PAYLINE20200116105303\"," +
-            "\"total_fee\" \"0.01\"," +
-            "\"trade_no\" \"PAYLINE20200116105303\"," +
-            "\"trade_status\"\"TRADE_STATUS\"," +
-            "\"sign\" \"signaturelulz\"," +
-            "\"sign_type\" \"RSA2\"}";
-    public static String invalidIdNotificationBodyTemplate = "{" +
-            "\"currency\": \"USD\"," +
-            "\"notify_id\": \"-1\","+
-            "\"out_trade_no\": \"PAYLINE20200116105303\"," +
-            "\"total_fee\": \"0.01\"," +
-            "\"trade_no\": \"PAYLINE20200116105303\"," +
-            "\"trade_status\": \"TRADE_STATUS\"," +
-            "\"sign\": \"signaturelulz\"," +
-            "\"sign_type\": \"RSA2\"}";
-    public static String transactionBodyPaid = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+    public static String validNotificationBodyTemplate = "currency=USD&notify_id=5ac236e4cf7822d205cedcc252b54ebwg1&notify_time=2020-01-14 15:23:12&notify_type=trade_status_sync&out_trade_no=FALCN32YWXN2CL4KFT8&sign=NN2trlV3PKBjZN7KS4oE8PG8WkHFqXIvvQl32fJ2FO9J+HniSuvv36VYPWbARVmodnTvYVkFmR2FB9ioDX0iRTRRSCkz8+ox3ytrlRdRfaeGMSGBuHN6WP/tAHscBbNvjkzyshjTCoXO6MFFg92CR2K50DvtNNUerZa/mx4lA5I=&sign_type=RSA2&total_fee=108.00&trade_no=2020011421001003050502834160&trade_status=TRADE_STATUS";
+
+    public static String transactionBody = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
             "<alipay>\n" +
             "  <is_success>T</is_success>\n" +
             "  <request>\n" +
@@ -92,13 +68,17 @@ public class MockUtils {
             "      <to_seller_fee>73.82</to_seller_fee>\n" +
             "      <total_fee>73.82</total_fee>\n" +
             "      <trade_no>2020022722001381441000086488</trade_no>\n" +
-            "      <trade_status>TRADE_FINISHED</trade_status>\n" +
+            "      <trade_status>TRADE_STATUS</trade_status>\n" +
             "      <use_coupon>F</use_coupon>\n" +
             "    </trade>\n" +
             "  </response>\n" +
             "  <sign>MiQ/9EHsh6qD1d9+jTpZKiJjCeYU1QlxTLBDlYLvfqfQFnr+uH/4gkfwkHrWgGCYxX+HEPXIJDQRhiQDvOS2jgq3xvxYBK/ZppJu3U79FwlJx1a1oQTqICnEalU1RBQPKdMXLj7qRb07stDBunmZEwcU1d1WQLZeogzx1f76dpu3ofjIPBoUxRiclnYCV7Jkrq4zo0yRD+hxW7VJ98iE8zII6AGVv4z+3v/m2hx71oDnJrj1w6aBuwcxotSba3azOdbzzZSHo3XBW0Gr1/yooM4zc73lcfdXgK75NYUVAgUeXo8YY3PnBHDBe4TRQkNmbKpNElOwOycVgp6FM2oj1A==</sign>\n" +
             "  <sign_type>RSA2</sign_type>\n" +
             "</alipay>";
+    public static String transactionBody(Trade.TradeStatus status){
+        return transactionBody.replace("TRADE_STATUS", status.name());
+    }
+
     public static String notificationBodyPaid = validNotificationBodyTemplate.replace("TRADE_STATUS", "TRADE_FINISHED");
     public static String notificationBodyRefused = validNotificationBodyTemplate.replace("TRADE_STATUS", "TRADE_CLOSED");
     public static String notificationBodyPaymentHold = validNotificationBodyTemplate.replace("TRADE_STATUS", "WAIT_BUYER_PAY");

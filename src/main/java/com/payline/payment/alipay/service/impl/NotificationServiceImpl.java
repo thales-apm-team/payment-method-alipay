@@ -18,6 +18,8 @@ import com.payline.pmapi.bean.notification.response.NotificationResponse;
 import com.payline.pmapi.bean.notification.response.impl.PaymentResponseByNotificationResponse;
 import com.payline.pmapi.bean.payment.request.NotifyTransactionStatusRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
+import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.BuyerPaymentId;
+import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.impl.EmptyTransactionDetails;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
@@ -31,7 +33,7 @@ import static com.payline.payment.alipay.bean.object.ForexService.single_trade_q
 public class NotificationServiceImpl implements NotificationService {
     private static final Logger LOGGER = LogManager.getLogger(NotificationServiceImpl.class);
 
-    public static final HttpClient client = HttpClient.getInstance();
+    private HttpClient client = HttpClient.getInstance();
 
     @Override
     public NotificationResponse parse(NotificationRequest request) {
@@ -46,6 +48,7 @@ public class NotificationServiceImpl implements NotificationService {
             String notificationId = PluginUtils.getStringUsingRegex("notify_id=(.{34})", content);
 
             if (PluginUtils.isEmpty(transactionId)) {
+                transactionId = "UNKNOWN";
                 LOGGER.error("Bad content: {}", content);
                 throw new PluginException("No transactionId in notification content");
             }
@@ -90,10 +93,11 @@ public class NotificationServiceImpl implements NotificationService {
         } catch (PluginException e) {
             paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                     .withErrorCode(e.getErrorCode())
-                    .withFailureCause(PluginUtils.getFailureCause(e.getFailureCause().toString()))
+                    .withFailureCause(e.getFailureCause())
                     .build();
         } catch (RuntimeException e) {
             paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
+                    .withErrorCode(PluginException.runtimeErrorCode(e))
                     .withFailureCause(FailureCause.INTERNAL_ERROR)
                     .build();
         }
@@ -143,10 +147,13 @@ public class NotificationServiceImpl implements NotificationService {
 
             switch (status) {
                 case TRADE_FINISHED:
+                BuyerPaymentId paymentId = new EmptyTransactionDetails(); // todo voir Q11
+
                     paymentResponse = PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
                             .withPartnerTransactionId(transaction.getTrade_no())
                             .withStatusCode(status.name())
                             .withTransactionAdditionalData(transaction.getBuyer_id())
+                            .withTransactionDetails(paymentId)
                             .build();
                     break;
                 case WAIT_BUYER_PAY:
