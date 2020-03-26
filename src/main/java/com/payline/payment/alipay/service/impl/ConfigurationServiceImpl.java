@@ -129,14 +129,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             AlipayAPIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
 
             // response should not be successful
-            if (!"TRADE_NOT_EXIST".equalsIgnoreCase(response.getError())) {
-                errors.put(GENERIC_ERROR, response.getError()); // todo etre plus parlant sur le message et le champs d'erreur
+            if("ILLEGAL_PARTNER".equalsIgnoreCase(response.getError()))
+            {
+                errors.put(ContractConfigurationKeys.MERCHANT_PID, response.getError());
+            }
+            else if (!"TRADE_NOT_EXIST".equalsIgnoreCase(response.getError())) {
+                errors.put(GENERIC_ERROR, response.getError());
             }
         } catch (PluginException e) {
-            // If an exception is thrown, it means that the client private key is wrong
-            errors.put(ContractConfigurationKeys.MERCHANT_PID, e.getErrorCode());   // todo c'est vraiment certain?
+            errors.put(GENERIC_ERROR, e.getErrorCode());
         } catch (RuntimeException e) {
-            errors.put(GENERIC_ERROR, e.getMessage()); // todo revoir le message a afficher (en plus RuntimeException, c'est pas une clé du formulaire)
+            errors.put(GENERIC_ERROR, e.getMessage());
         }
         return errors;
     }
