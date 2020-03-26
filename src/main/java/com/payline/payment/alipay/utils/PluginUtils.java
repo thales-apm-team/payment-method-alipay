@@ -184,7 +184,7 @@ public class PluginUtils {
         StringBuilder sb = new StringBuilder();
         sb.append(amount.getAmountInSmallestUnit());
 
-        for (int i = sb.length(); i < nbDigits; i++) {
+        for (int i = sb.length(); i < nbDigits+1; i++) {
             sb.insert(0, "0");
         }
 
