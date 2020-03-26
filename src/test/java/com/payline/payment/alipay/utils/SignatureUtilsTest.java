@@ -26,7 +26,7 @@ class SignatureUtilsTest {
         map.put("foo","FOO");
         map.put("bar","BAR");
         map.put("baz","BAZ");
-        String expected = "Nqr1u8l4YYFlbM7VMGrhJ7+tEz0WGQzznc8uBAohvfbed54bA5m4rHJwkUUE0GtqEkEB/3uY4zkeBLHbxDZpyxCkaFCErtxf60UBugegGojTwWe2Af6cmLkeAVQ/oPjA+9yYcXdO3bFkFsIhp+re4Ldyl4zHtnXUj0YBWukE5ul18qBZi4ExcFHeg40eR+AzckvxVWCs1+iaUKOrabVB8AI+q4dy0SQMycoBVUFs6Km6WxGGMyRDW+CuLfzfG8G+4ynjnxnWP1QHBM8++A9WgRWYjW0ZiYlsx61Wl+vhAZXaVDI5FpqHb5L9ZOUU8VvdJsZ6r8Z7eAqTop26HgQIdg==";
+        String expected = "Nqr1u8l4YYFlbM7VMGrhJ7%2BtEz0WGQzznc8uBAohvfbed54bA5m4rHJwkUUE0GtqEkEB%2F3uY4zkeBLHbxDZpyxCkaFCErtxf60UBugegGojTwWe2Af6cmLkeAVQ%2FoPjA%2B9yYcXdO3bFkFsIhp%2Bre4Ldyl4zHtnXUj0YBWukE5ul18qBZi4ExcFHeg40eR%2BAzckvxVWCs1%2BiaUKOrabVB8AI%2Bq4dy0SQMycoBVUFs6Km6WxGGMyRDW%2BCuLfzfG8G%2B4ynjnxnWP1QHBM8%2B%2BA9WgRWYjW0ZiYlsx61Wl%2BvhAZXaVDI5FpqHb5L9ZOUU8VvdJsZ6r8Z7eAqTop26HgQIdg%3D%3D";
 
         Assertions.assertEquals(expected, utils.getSignedParameters(config,map).get("sign"));
     }

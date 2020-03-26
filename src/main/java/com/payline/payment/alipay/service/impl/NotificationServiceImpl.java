@@ -19,7 +19,6 @@ import com.payline.pmapi.bean.notification.response.impl.PaymentResponseByNotifi
 import com.payline.pmapi.bean.payment.request.NotifyTransactionStatusRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.BuyerPaymentId;
-import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.impl.EmptyTransactionDetails;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
@@ -47,7 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
             configuration = new RequestConfiguration(request.getContractConfiguration(), request.getEnvironment(), request.getPartnerConfiguration());
             String content = PluginUtils.inputStreamToString(request.getContent());
 
-            Map<String,String> val = PluginUtils.createMapFromString(content);
+            Map<String, String> val = PluginUtils.createMapFromString(content);
             transactionId = val.get("out_trade_no");
             String notificationId = val.get("notify_id"); //PluginUtils.getStringUsingRegex("notify_id=(.{34})", content);
 
@@ -151,7 +150,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             switch (status) {
                 case TRADE_FINISHED:
-                BuyerPaymentId paymentId = new EmptyTransactionDetails(); // todo voir Q11
+                    BuyerPaymentId paymentId = PluginUtils.buildEmail(transaction.getBuyer_email());
 
                     paymentResponse = PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
                             .withPartnerTransactionId(transaction.getTrade_no())

@@ -1,5 +1,7 @@
 package com.payline.payment.alipay.utils;
 
+import com.payline.payment.alipay.exception.InvalidDataException;
+import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.impl.Email;
 import eu.bitwalker.useragentutils.DeviceType;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.http.Header;
@@ -7,10 +9,8 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PluginUtils {
+    private static final String PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
 
     /* Static utility class : no need to instantiate it (to please Sonar) */
     private PluginUtils() {
@@ -125,13 +127,48 @@ public class PluginUtils {
 
     /**
      * Check if agent is a mobile agent or not
+     *
      * @param agent the Browser agent
      * @return tru if the agent is a mobile agent
      */
-    public static boolean mobileUser(String agent){
+    public static boolean mobileUser(String agent) {
         UserAgent userAgent = UserAgent.parseUserAgentString(agent);
         DeviceType deviceType = userAgent.getOperatingSystem().getDeviceType();
 
         return DeviceType.MOBILE.equals(deviceType);
+    }
+
+    /**
+     * create an Email object from val
+     *
+     * @param val the String to convert into an Email, if val is not a valid email, add '@id.com' at the end
+     * @return a valid Email
+     */
+    public static Email buildEmail(String val) {
+        val = val.replace("*", "X");
+
+        Pattern pattern = Pattern.compile(PATTERN);
+        Matcher matcher = pattern.matcher(val);
+        if (!matcher.matches()) {
+            val += "@id.com";
+        }
+
+        return Email.EmailBuilder.anEmail().withEmail(val).build();
+    }
+
+
+    public static Map<String, String> foo(Map<String, String> params) {
+        try{
+            //Create parameters list
+            LinkedHashMap<String, String> parametersListForResponse = new LinkedHashMap<>();
+            for (Map.Entry<String,String> e : params.entrySet()) {
+                parametersListForResponse.put(e.getKey(), URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8.toString()));
+            }
+            return parametersListForResponse;
+        } catch (UnsupportedEncodingException e) {
+            throw new InvalidDataException("Unable to encode params", e);
+        }
+
+
     }
 }

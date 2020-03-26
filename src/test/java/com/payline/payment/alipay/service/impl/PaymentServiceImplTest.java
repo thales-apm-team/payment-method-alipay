@@ -41,7 +41,6 @@ class PaymentServiceImplTest {
         params.put("foo", "bar");
         Mockito.doReturn(params).when(signatureUtils).getSignedParameters(any(), any());
 
-        PluginUtils.SwitchDevice(true);
         PaymentResponse response = service.paymentRequest(MockUtils.aPaylinePaymentRequest());
 
         Assertions.assertEquals(PaymentResponseRedirect.class, response.getClass());
@@ -50,12 +49,11 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void paymentRequestMobileOK() {
+    void paymentRequestMobileOK() { // todo
         Map<String,String> params = new HashMap<>();
         params.put("foo", "bar");
         Mockito.doReturn(params).when(signatureUtils).getSignedParameters(any(), any());
 
-        PluginUtils.SwitchDevice(false);
         PaymentResponse response = service.paymentRequest(MockUtils.aPaylinePaymentRequest());
 
         Assertions.assertEquals(PaymentResponseRedirect.class, response.getClass());

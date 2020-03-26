@@ -7,11 +7,13 @@ import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -39,7 +41,8 @@ public class SignatureUtils {
         // Add the signature to the parameters
         params.put("sign", sha256withRsa);
         params.put("sign_type", "RSA2");
-        return params;
+
+        return PluginUtils.foo(params);
     }
 
     public boolean getVerification(RequestConfiguration configuration, Map<String, String> map) {

@@ -29,8 +29,7 @@ public class RefundServiceImpl implements RefundService {
     public RefundResponse refundRequest(RefundRequest refundRequest) {
         RefundResponse refundResponse;
         try {
-            RequestConfiguration configuration = new RequestConfiguration(refundRequest.getContractConfiguration(), refundRequest.getEnvironment(), refundRequest.getPartnerConfiguration());
-            String product_code = PluginUtils.userIsOnPC ? "NEW_OVERSEAS_SELLER" : "NEW_WAP_OVERSEAS_SELLER";
+            RequestConfiguration configuration = RequestConfiguration.build(refundRequest);
 
             // create ForexRefund request object
             ForexRefund forexRefund = ForexRefund.ForexRefundBuilder
@@ -41,7 +40,7 @@ public class RefundServiceImpl implements RefundService {
                     .withOutReturnNo(refundRequest.getTransactionId())  // refund Id
                     .withOutTradeNo(refundRequest.getTransactionId())   // transaction Id
                     .withPartner(refundRequest.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue())
-                    .withProductCode(product_code)
+                    .withProductCode("NEW_OVERSEAS_SELLER")
                     .withReturnAmount(refundRequest.getAmount().getAmountInSmallestUnit().toString()) // todo convertir?
                     .withService(forex_refund)
                     .build();
@@ -51,11 +50,11 @@ public class RefundServiceImpl implements RefundService {
 
             // check the response and return a RefundResponse
             if (refundAlipayAPIResponse.isSuccess()) {
-                refundResponse =  RefundResponseSuccess.RefundResponseSuccessBuilder.aRefundResponseSuccess()
+                refundResponse = RefundResponseSuccess.RefundResponseSuccessBuilder.aRefundResponseSuccess()
                         .withPartnerTransactionId(refundRequest.getPartnerTransactionId())
                         .withStatusCode("200")
                         .build();
-            }else {
+            } else {
                 refundResponse = RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
                         .withErrorCode(refundAlipayAPIResponse.getError())
                         .withFailureCause(ErrorUtils.getFailureCause(refundAlipayAPIResponse.getError()))

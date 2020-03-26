@@ -136,7 +136,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             // If an exception is thrown, it means that the client private key is wrong
             errors.put(ContractConfigurationKeys.MERCHANT_PID, e.getErrorCode());   // todo c'est vraiment certain?
         } catch (RuntimeException e) {
-            errors.put("RuntimeException", e.getMessage()); // todo revoir le message a afficher (en plus RuntimeException, c'est pas une clé du formulaire)
+            errors.put(GENERIC_ERROR, e.getMessage()); // todo revoir le message a afficher (en plus RuntimeException, c'est pas une clé du formulaire)
         }
         return errors;
     }

@@ -182,7 +182,6 @@ public class HttpClient {
             }
             return response;
 
-
         } catch (URISyntaxException e) {
             throw new InvalidDataException("Syntax Exception", e);
         }
@@ -224,9 +223,8 @@ public class HttpClient {
     }
 
 
-    private static List<NameValuePair> fromMap(Map<String, String> map) { // todo on doit pouvoir le faire en java8
+    private static List<NameValuePair> fromMap(Map<String, String> map) {
         List<NameValuePair> list = new ArrayList<>();
-
         for (Map.Entry<String, String> entry : map.entrySet()) {
             list.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }

@@ -58,7 +58,6 @@ public class TestIT extends AbstractPaymentIntegration {
             System.out.println(partnerUrl);
             System.out.println(driver.getPageSource());
 
-            // todo faire passer ces valeur en parametre du lancement de l'appli (voir ce qui est fait sur equens)
             WebDriverWait wait = new WebDriverWait(driver, 3000);
             wait.until(ExpectedConditions.elementToBeClickable(By.name("loginId")));
             driver.findElement(By.id("J_tLoginId")).sendKeys("forex_126564@alitest.com");
@@ -103,7 +102,6 @@ public class TestIT extends AbstractPaymentIntegration {
 
     @Test
     void fullPaymentTest() {
-        PluginUtils.SwitchDevice(true);
         // Login
         Map<String, String> errors = configurationService.check(MockUtils.aContractParametersCheckRequest());
         //Assertions.assertEquals(0, errors.size());
