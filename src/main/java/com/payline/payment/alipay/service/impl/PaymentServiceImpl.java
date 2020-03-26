@@ -15,15 +15,11 @@ import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseRedirect;
 import com.payline.pmapi.logger.LogManager;
 import com.payline.pmapi.service.PaymentService;
-import org.apache.http.NameValuePair;
 import org.apache.logging.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.payline.payment.alipay.bean.object.ForexService.create_forex_trade;
 import static com.payline.payment.alipay.bean.object.ForexService.create_forex_trade_wap;
@@ -39,12 +35,14 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             ForexService service;
             String product_code;
-            if (PluginUtils.userIsOnPC) { // todo
+
+
+            if (PluginUtils.mobileUser(paymentRequest.getBrowser().getUserAgent())) {
                 service = create_forex_trade;
-                product_code = "NEW_OVERSEAS_SELLER";
+                product_code = "NEW_WAP_OVERSEAS_SELLER";
             } else {
                 service = create_forex_trade_wap;
-                product_code = "NEW_WAP_OVERSEAS_SELLER";
+                product_code = "NEW_OVERSEAS_SELLER";
             }
             // create createForexTrade request object
             CreateForexTrade createForexTrade = CreateForexTrade.CreateForexTradeBuilder

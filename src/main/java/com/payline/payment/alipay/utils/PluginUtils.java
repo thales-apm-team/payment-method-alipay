@@ -1,5 +1,7 @@
 package com.payline.payment.alipay.utils;
 
+import eu.bitwalker.useragentutils.DeviceType;
+import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpPost;
@@ -17,7 +19,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PluginUtils {
-    static public boolean userIsOnPC = false;
 
     /* Static utility class : no need to instantiate it (to please Sonar) */
     private PluginUtils() {
@@ -74,14 +75,6 @@ public class PluginUtils {
     }
 
     /**
-     * Switch user device
-     * This method allow to simulate a computer or a mobile (for testing services on mobile)
-     */
-    public static void SwitchDevice(boolean isOnPC) {
-        PluginUtils.userIsOnPC = isOnPC;
-    }
-
-    /**
      * Convert an InputStream into a String
      *
      * @param stream the InputStream to convert
@@ -128,5 +121,17 @@ public class PluginUtils {
         }
 
         return map;
+    }
+
+    /**
+     * Check if agent is a mobile agent or not
+     * @param agent the Browser agent
+     * @return tru if the agent is a mobile agent
+     */
+    public static boolean mobileUser(String agent){
+        UserAgent userAgent = UserAgent.parseUserAgentString(agent);
+        DeviceType deviceType = userAgent.getOperatingSystem().getDeviceType();
+
+        return DeviceType.MOBILE.equals(deviceType);
     }
 }
