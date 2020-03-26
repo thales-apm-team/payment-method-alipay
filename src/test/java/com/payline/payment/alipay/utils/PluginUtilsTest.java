@@ -34,7 +34,7 @@ class PluginUtilsTest {
         String dateInString = "12/12/2012";
 
         Date date = formatter.parse(dateInString);
-        Assertions.assertEquals("2012-12-12 00:00:00 CET", PluginUtils.formatDate(date)); // todo verifier que c'est vraiment ca qu'alipay accept
+        Assertions.assertEquals("2012-12-12 00:00:00 CET", PluginUtils.formatDate(date));
     }
 
     @Test

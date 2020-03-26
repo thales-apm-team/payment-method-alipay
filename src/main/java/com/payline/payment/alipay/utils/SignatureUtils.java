@@ -4,22 +4,16 @@ import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.exception.InvalidDataException;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
-import com.payline.pmapi.logger.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SignatureUtils {
-    private static final Logger LOGGER = LogManager.getLogger(SignatureUtils.class); // todo utiliser le logger
-
     private static class Holder {
         private static final SignatureUtils instance = new SignatureUtils();
     }

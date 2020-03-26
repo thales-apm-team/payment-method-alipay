@@ -5,6 +5,7 @@ import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.SignatureUtils;
 import com.payline.pmapi.bean.common.FailureCause;
+import com.payline.pmapi.bean.payment.Browser;
 import com.payline.pmapi.bean.payment.request.PaymentRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
@@ -49,12 +50,12 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void paymentRequestMobileOK() { // todo
+    void paymentRequestMobileOK() {
         Map<String,String> params = new HashMap<>();
         params.put("foo", "bar");
         Mockito.doReturn(params).when(signatureUtils).getSignedParameters(any(), any());
 
-        PaymentResponse response = service.paymentRequest(MockUtils.aPaylinePaymentRequest());
+        PaymentResponse response = service.paymentRequest(MockUtils.aPaylinePaymentRequestBuilder().withBrowser(Browser.BrowserBuilder.aBrowser().withUserAgent("Mobile Safari").build()).build());
 
         Assertions.assertEquals(PaymentResponseRedirect.class, response.getClass());
         PaymentResponseRedirect responseRedirect = (PaymentResponseRedirect) response;
