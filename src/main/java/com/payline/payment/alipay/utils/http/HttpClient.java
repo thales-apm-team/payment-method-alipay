@@ -138,17 +138,7 @@ public class HttpClient {
 
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
-        AlipayAPIResponse alipayAPIResponse;
-        if (response.getStatusCode() == 200) {  // todo pk on fait ca ici et pas pour les autres appels?
-            alipayAPIResponse = AlipayAPIResponse.fromXml(response.getContent());
-        } else {
-            alipayAPIResponse = new AlipayAPIResponse();
-            alipayAPIResponse.setIs_success("F");
-            alipayAPIResponse.setError("404 Not Found");
-
-        }
-
-        return alipayAPIResponse;
+        return AlipayAPIResponse.fromXml(response.getContent());
     }
 
     /**------------------------------------------------------------------------------------------------------------------*/
