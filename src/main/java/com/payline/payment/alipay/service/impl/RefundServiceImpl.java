@@ -41,7 +41,7 @@ public class RefundServiceImpl implements RefundService {
                     .withOutTradeNo(refundRequest.getTransactionId())   // transaction Id
                     .withPartner(refundRequest.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue())
                     .withProductCode("NEW_OVERSEAS_SELLER")
-                    .withReturnAmount(refundRequest.getAmount().getAmountInSmallestUnit().toString()) // todo convertir?
+                    .withReturnAmount(PluginUtils.createStringAmount( refundRequest.getAmount()))
                     .withService(forex_refund)
                     .build();
 

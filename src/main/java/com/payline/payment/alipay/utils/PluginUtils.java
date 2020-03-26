@@ -1,6 +1,7 @@
 package com.payline.payment.alipay.utils;
 
 import com.payline.payment.alipay.exception.InvalidDataException;
+import com.payline.pmapi.bean.common.Amount;
 import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.impl.Email;
 import eu.bitwalker.useragentutils.DeviceType;
 import eu.bitwalker.useragentutils.UserAgent;
@@ -10,6 +11,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -168,7 +170,25 @@ public class PluginUtils {
         } catch (UnsupportedEncodingException e) {
             throw new InvalidDataException("Unable to encode params", e);
         }
+    }
 
+    /**
+     * Return a string which was converted from cents to currency amount
+     *
+     * @param amount the amount to convert
+     * @return Amount as String
+     */
+    public static String createStringAmount(Amount amount) {
+        int nbDigits = amount.getCurrency().getDefaultFractionDigits();
 
+        StringBuilder sb = new StringBuilder();
+        sb.append(amount.getAmountInSmallestUnit());
+
+        for (int i = sb.length(); i < nbDigits; i++) {
+            sb.insert(0, "0");
+        }
+
+        sb.insert(sb.length() - nbDigits, ".");
+        return sb.toString();
     }
 }

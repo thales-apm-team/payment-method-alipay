@@ -56,7 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .withReturnUrl(paymentRequest.getEnvironment().getRedirectionReturnURL())
                     .withService(service)
                     .withSubject(paymentRequest.getSoftDescriptor())
-                    .withTotalFee(paymentRequest.getAmount().getAmountInSmallestUnit().toString()) // todo convertir?
+                    .withTotalFee(PluginUtils.createStringAmount(paymentRequest.getAmount()))
                     .build();
 
             // create the url to get
