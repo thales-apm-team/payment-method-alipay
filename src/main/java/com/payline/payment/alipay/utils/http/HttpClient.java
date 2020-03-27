@@ -1,12 +1,15 @@
 package com.payline.payment.alipay.utils.http;
 
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
+import com.payline.payment.alipay.bean.request.EndTransactionNotificationRequest;
 import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.bean.response.NotifyResponse;
 import com.payline.payment.alipay.exception.InvalidDataException;
 import com.payline.payment.alipay.exception.PluginException;
+import com.payline.payment.alipay.utils.EndTransactionNotificationUtils;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.SignatureUtils;
+import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.logger.LogManager;
@@ -14,15 +17,18 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -173,6 +179,35 @@ public class HttpClient {
             return response;
 
         } catch (URISyntaxException e) {
+            throw new InvalidDataException("Syntax Exception", e);
+        }
+    }
+
+    /**------------------------------------------------------------------------------------------------------------------*/
+
+    /**
+     * Manage get API call with signature
+     *
+     * @param requestConfiguration
+     * @return
+     */
+    public StringResponse sendNotificationMonext(RequestConfiguration requestConfiguration, EndTransactionNotificationRequest endTransactionNotificationRequest) {
+        try {
+            // Create the HttpGet url with parameters
+            URI baseUrl = new URI(requestConfiguration.getContractConfiguration().getProperty(ContractConfigurationKeys.NOTIFICATION_URL).getValue());
+            // Create the HttpGet request
+            StringEntity entity = new StringEntity(EndTransactionNotificationUtils.toJson(endTransactionNotificationRequest));
+            HttpPost httpPost = new HttpPost(baseUrl);
+            httpPost.setEntity(entity);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            httpPost.setConfig(createHttpRequestConfig(requestConfiguration));
+
+            // Execute request
+            StringResponse response = this.execute(httpPost);
+            return response;
+
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
             throw new InvalidDataException("Syntax Exception", e);
         }
     }
