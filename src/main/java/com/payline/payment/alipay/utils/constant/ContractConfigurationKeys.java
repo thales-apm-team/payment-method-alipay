@@ -7,6 +7,7 @@ public class ContractConfigurationKeys {
     public static final String SECONDARY_MERCHANT_NAME = "SECONDARY_MERCHANT_NAME";
     public static final String SECONDARY_MERCHANT_INDUSTRY = "SECONDARY_MERCHANT_INDUSTRY";
     public static final String MERCHANT_URL = "MERCHANT_URL";
+    public static final String NOTIFICATION_URL = "NOTIFICATION_URL";
 
     /* empty constructor to please Sonar */
     private ContractConfigurationKeys() {
