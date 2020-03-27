@@ -41,7 +41,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponse parse(NotificationRequest request) {
-        RequestConfiguration configuration;
+        RequestConfiguration configuration = null;
         PaymentResponse paymentResponse;
         NotificationMessage notificationMessage = null;
         String transactionId = "UNKNOWN";
@@ -114,7 +114,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (notificationMessage!= null){
             boolean success = PaymentResponseSuccess.class.equals(paymentResponse.getClass());
             EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.createFromNotificationService(notificationMessage, request, success);
-            //todo call monext API
+            client.sendNotificationMonext(configuration,endTransactionNotificationRequest);
         }
 
 
