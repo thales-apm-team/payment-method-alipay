@@ -60,7 +60,7 @@ public class RefundServiceImpl implements RefundService {
 
                 // notify Monext
                 EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.createFromRefundService(refundRequest);
-                //todo call monext API
+                client.sendNotificationMonext(configuration,endTransactionNotificationRequest);
 
             } else {
                 refundResponse = RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
