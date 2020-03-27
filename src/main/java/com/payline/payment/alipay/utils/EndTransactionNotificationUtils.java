@@ -85,16 +85,16 @@ public class EndTransactionNotificationUtils {
         String tagTransactionDate = dateFormatter.format(request.getOrder().getDate());
         String tagTransactionYear = yearFormatter.format(request.getOrder().getDate());
         String schemePaymentTime = fullFormatter.format(request.getOrder().getDate());
-        String tagAcqIdentifier = "";    // todo
+        String tagAcqIdentifier = "";
         String scheme = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.SCHEME);
         String schemeTransId = request.getTransactionId();
-        String partnerTransId = "";   // todo
+        String partnerTransId = "";
         String partnerTransName = request.getContractConfiguration().getPaymentMethodIdentifier();
         String buyerId = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SUPPLIER).getValue();
-        String partnerId = ""; //todo
-        String merchantId = ""; // todo
+        String partnerId = "";
+        String merchantId = "";
         String mccCode = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY).getValue();
-        String storeId = ""; //todo
+        String storeId = "";
         String messageSenderId = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.MESSAGE_SENDER_ID);
 
         return EndTransactionNotificationRequest.Builder

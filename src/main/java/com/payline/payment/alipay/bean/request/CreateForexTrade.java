@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateForexTrade extends Request {
-    String currency;
-    String notify_url;
-    String product_code;
-    String refer_url;
-    String return_url;
-    String subject;
-    String total_fee;
+    private String currency;
+    private String notify_url;
+    private String product_code;
+    private String refer_url;
+    private String return_url;
+    private String subject;
+    private String total_fee;
 
     public static class CreateForexTradeBuilder {
         static CreateForexTrade createForexTrade = new CreateForexTrade();

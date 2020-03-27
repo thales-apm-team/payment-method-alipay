@@ -1,20 +1,16 @@
 package com.payline.payment.alipay.bean.request;
 
 import com.payline.payment.alipay.bean.object.ForexService;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ForexRefund extends Request {
-    String currency;
-    String gmt_return;
-    String is_sync;
-    String out_return_no;
-    String product_code;
-    String return_amount;
+    private String currency;
+    private String gmt_return;
+    private String is_sync;
+    private String out_return_no;
+    private String product_code;
+    private String return_amount;
     public static class ForexRefundBuilder
     {
         static ForexRefund forexRefund = new ForexRefund();

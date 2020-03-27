@@ -1,10 +1,6 @@
 package com.payline.payment.alipay.bean.request;
 
 import com.payline.payment.alipay.bean.object.ForexService;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

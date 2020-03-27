@@ -32,13 +32,6 @@ class SignatureUtilsTest {
     }
 
     @Test
-    void getVerification() {
-        String received = "currency=USD&notify_id=5ac236e4cf7822d205cedcc252b54ebwg1&notify_time=2020-01-14 15:23:12&notify_type=trade_status_sync&out_trade_no=FALCN32YWXN2CL4KFT8&sign=NN2trlV3PKBjZN7KS4oE8PG8WkHFqXIvvQl32fJ2FO9J+HniSuvv36VYPWbARVmodnTvYVkFmR2FB9ioDX0iRTRRSCkz8+ox3ytrlRdRfaeGMSGBuHN6WP/tAHscBbNvjkzyshjTCoXO6MFFg92CR2K50DvtNNUerZa/mx4lA5I=&sign_type=RSA2&total_fee=108.00&trade_no=2020011421001003050502834160&trade_status=TRADE_FINISHED";
-
-        Assertions.assertTrue(utils.getVerification(config, PluginUtils.createMapFromString(received)));
-    }
-
-    @Test
     void mapToString() {
         Map<String, String> map = new HashMap<>();
         map.put("foo","FOO");

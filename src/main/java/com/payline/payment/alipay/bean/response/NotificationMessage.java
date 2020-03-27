@@ -9,13 +9,13 @@ import java.util.Date;
 import java.util.Map;
 
 public class NotificationMessage {
-    String currency;
-    String notify_id;
-    Date notifyTime;
-    String outTradeNo;
-    String totalFee;
-    String tradNo;
-    Trade.TradeStatus tradeStatus;
+    private String currency;
+    private String notify_id;
+    private Date notifyTime;
+    private String outTradeNo;
+    private String totalFee;
+    private String tradNo;
+    private Trade.TradeStatus tradeStatus;
 
     public NotificationMessage(String currency, String notify_id, Date notifyTime, String outTradeNo, String totalFee, String tradNo, Trade.TradeStatus tradeStatus) {
         this.currency = currency;
