@@ -2,11 +2,14 @@ package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.bean.object.Trade;
+import com.payline.payment.alipay.bean.request.EndTransactionNotificationRequest;
 import com.payline.payment.alipay.bean.request.NotifyVerify;
 import com.payline.payment.alipay.bean.request.SingleTradeQuery;
 import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.NotificationMessage;
 import com.payline.payment.alipay.bean.response.NotifyResponse;
 import com.payline.payment.alipay.exception.PluginException;
+import com.payline.payment.alipay.utils.EndTransactionNotificationUtils;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.http.HttpClient;
@@ -40,6 +43,7 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationResponse parse(NotificationRequest request) {
         RequestConfiguration configuration;
         PaymentResponse paymentResponse;
+        NotificationMessage notificationMessage = null;
         String transactionId = "UNKNOWN";
 
         try {
@@ -47,8 +51,9 @@ public class NotificationServiceImpl implements NotificationService {
             String content = PluginUtils.inputStreamToString(request.getContent());
 
             Map<String, String> val = PluginUtils.createMapFromString(content);
-            transactionId = val.get("out_trade_no");
-            String notificationId = val.get("notify_id"); //PluginUtils.getStringUsingRegex("notify_id=(.{34})", content);
+            notificationMessage = NotificationMessage.fromMap(val);
+            transactionId = notificationMessage.getOutTradeNo();
+            String notificationId = notificationMessage.getNotify_id();
 
             if (PluginUtils.isEmpty(transactionId)) {
                 transactionId = "UNKNOWN";
@@ -104,6 +109,17 @@ public class NotificationServiceImpl implements NotificationService {
                     .withFailureCause(FailureCause.INTERNAL_ERROR)
                     .build();
         }
+
+        // notify Monext
+        if (notificationMessage!= null){
+            boolean success = PaymentResponseSuccess.class.equals(paymentResponse.getClass());
+            EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.createFromNotificationService(notificationMessage, request, success);
+            //todo call monext API
+        }
+
+
+
+        // return the NotificationResponse
         TransactionCorrelationId correlationId = TransactionCorrelationId.TransactionCorrelationIdBuilder
                 .aCorrelationIdBuilder()
                 .withType(TransactionCorrelationId.CorrelationIdType.PARTNER_TRANSACTION_ID)

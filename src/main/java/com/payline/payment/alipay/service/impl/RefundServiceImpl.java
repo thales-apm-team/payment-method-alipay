@@ -1,9 +1,11 @@
 package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
+import com.payline.payment.alipay.bean.request.EndTransactionNotificationRequest;
 import com.payline.payment.alipay.bean.request.ForexRefund;
 import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.exception.PluginException;
+import com.payline.payment.alipay.utils.EndTransactionNotificationUtils;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.business.ErrorUtils;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
@@ -54,6 +56,12 @@ public class RefundServiceImpl implements RefundService {
                         .withPartnerTransactionId(refundRequest.getPartnerTransactionId())
                         .withStatusCode("200")
                         .build();
+
+
+                // notify Monext
+                EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.createFromRefundService(refundRequest);
+                //todo call monext API
+
             } else {
                 refundResponse = RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
                         .withErrorCode(refundAlipayAPIResponse.getError())

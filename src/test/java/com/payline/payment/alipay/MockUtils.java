@@ -130,7 +130,8 @@ public class MockUtils {
                 "SHF1PJqewhePY9xfKAMSXUo=\n" +
                 "-----END PRIVATE KEY-----");
         partnerConfigurationMap.put(PartnerConfigurationKeys.PUBLIC_KEY, "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvXgO/yLfPcJEgYy5EE7G4sXuzOQ4ki+5dFC2m/HBV5RUfAqoWWNF4ZXLc93C0IbnqRdPiX0C1cYne3cqQOY2NH6BiKEOVKyblI5loSobp5sfJszbIcvGcPmbTcOQsze1JR0at6sDeRarfyu4fwSCbVT6r39kVF/HVa1pGEuGU0XkTpfPCXZRFL50Xdm8+gRyRNgOw3BZfXggziWfg1P9RsLGfl/P2T9FUn+LXsBvY/i8EuNgyCia6Ht+Q/mXK0B2Svxauw/HZS4VvZbtNlOA0MD2oQBj363ytdXjgdaeZoDAD0b1FaQ+amwWjAVHvwW7lVkfKVZsCbBG3RHcT/YljwIDAQAB");
-
+        partnerConfigurationMap.put(PartnerConfigurationKeys.SCHEME, "ALIPAY");
+        partnerConfigurationMap.put(PartnerConfigurationKeys.MESSAGE_SENDER_ID, "Payline");
         Map<String, String> sensitiveConfigurationMap = new HashMap<>();
 
         return new PartnerConfiguration(partnerConfigurationMap, sensitiveConfigurationMap);
