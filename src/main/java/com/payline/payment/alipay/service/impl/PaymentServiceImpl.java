@@ -38,10 +38,10 @@ public class PaymentServiceImpl implements PaymentService {
 
 
             if (PluginUtils.mobileUser(paymentRequest.getBrowser().getUserAgent())) {
-                service = create_forex_trade;
+                service = create_forex_trade_wap;
                 product_code = "NEW_WAP_OVERSEAS_SELLER";
             } else {
-                service = create_forex_trade_wap;
+                service = create_forex_trade;
                 product_code = "NEW_OVERSEAS_SELLER";
             }
             // create createForexTrade request object
