@@ -1,6 +1,7 @@
 package com.payline.payment.alipay.bean.request;
 
 import com.payline.payment.alipay.bean.object.ForexService;
+
 import java.util.HashMap;
 import java.util.Map;
 
