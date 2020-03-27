@@ -54,6 +54,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .withProductCode(product_code)
                     .withReferUrl(paymentRequest.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_URL).getValue())
                     .withReturnUrl(paymentRequest.getEnvironment().getRedirectionReturnURL())
+                    .withNotifyUrl(paymentRequest.getEnvironment().getNotificationURL())
                     .withService(service)
                     .withSubject(paymentRequest.getSoftDescriptor())
                     .withTotalFee(PluginUtils.createStringAmount(paymentRequest.getAmount()))
