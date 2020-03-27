@@ -2,7 +2,7 @@ package com.payline.payment.alipay.utils.http;
 
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.bean.request.EndTransactionNotificationRequest;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.APIResponse;
 import com.payline.payment.alipay.bean.response.NotifyResponse;
 import com.payline.payment.alipay.exception.InvalidDataException;
 import com.payline.payment.alipay.exception.PluginException;
@@ -125,12 +125,12 @@ public class HttpClient {
      * Build and send a request to get transaction status
      *
      * @param requestConfiguration
-     * @return The response converted as a {@link AlipayAPIResponse}.
+     * @return The response converted as a {@link APIResponse}.
      */
-    public AlipayAPIResponse getTransactionStatus(RequestConfiguration requestConfiguration, Map<String, String> params) {
+    public APIResponse getTransactionStatus(RequestConfiguration requestConfiguration, Map<String, String> params) {
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
-        return AlipayAPIResponse.fromXml(response.getContent());
+        return APIResponse.fromXml(response.getContent());
     }
 
     /**
@@ -138,13 +138,13 @@ public class HttpClient {
      *
      * @param requestConfiguration
      * @param params
-     * @return The response converted as a {@link AlipayAPIResponse}.
+     * @return The response converted as a {@link APIResponse}.
      */
-    public AlipayAPIResponse getRefund(RequestConfiguration requestConfiguration, Map<String, String> params) {
+    public APIResponse getRefund(RequestConfiguration requestConfiguration, Map<String, String> params) {
 
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
-        return AlipayAPIResponse.fromXml(response.getContent());
+        return APIResponse.fromXml(response.getContent());
     }
 
     /**------------------------------------------------------------------------------------------------------------------*/
@@ -186,16 +186,16 @@ public class HttpClient {
     /**------------------------------------------------------------------------------------------------------------------*/
 
     /**
-     * Manage get API call with signature
+     * Send post request with notification data
      *
      * @param requestConfiguration
-     * @return
+     * @param endTransactionNotificationRequest
+     * @return StringResponse
      */
     public StringResponse sendNotificationMonext(RequestConfiguration requestConfiguration, EndTransactionNotificationRequest endTransactionNotificationRequest) {
         try {
-            // Create the HttpGet url with parameters
             URI baseUrl = new URI(requestConfiguration.getContractConfiguration().getProperty(ContractConfigurationKeys.NOTIFICATION_URL).getValue());
-            // Create the HttpGet request
+            // Create the httpPost request
             StringEntity entity = new StringEntity(EndTransactionNotificationUtils.toJson(endTransactionNotificationRequest));
             HttpPost httpPost = new HttpPost(baseUrl);
             httpPost.setEntity(entity);

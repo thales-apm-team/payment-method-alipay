@@ -1,6 +1,6 @@
 import com.payline.payment.alipay.MockUtils;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.APIResponse;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.logger.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +14,7 @@ class MainTester {
     /**------------------------------------------------------------------------------------------------------------------*/
     public static void main(String[] args) throws IOException {
         Boolean connectionStatus;
-        AlipayAPIResponse alipayAPIResponse;
+        APIResponse APIResponse;
 
         try {
 

@@ -3,7 +3,7 @@ package com.payline.payment.alipay.service.impl;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.bean.request.EndTransactionNotificationRequest;
 import com.payline.payment.alipay.bean.request.ForexRefund;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.APIResponse;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.EndTransactionNotificationUtils;
 import com.payline.payment.alipay.utils.PluginUtils;
@@ -48,10 +48,10 @@ public class RefundServiceImpl implements RefundService {
                     .build();
 
             // call refund API
-            AlipayAPIResponse refundAlipayAPIResponse = client.getRefund(configuration, forexRefund.getParametersList());
+            APIResponse refundAPIResponse = client.getRefund(configuration, forexRefund.getParametersList());
 
             // check the response and return a RefundResponse
-            if (refundAlipayAPIResponse.isSuccess()) {
+            if (refundAPIResponse.isSuccess()) {
                 refundResponse = RefundResponseSuccess.RefundResponseSuccessBuilder.aRefundResponseSuccess()
                         .withPartnerTransactionId(refundRequest.getPartnerTransactionId())
                         .withStatusCode("200")
@@ -64,8 +64,8 @@ public class RefundServiceImpl implements RefundService {
 
             } else {
                 refundResponse = RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
-                        .withErrorCode(refundAlipayAPIResponse.getError())
-                        .withFailureCause(ErrorUtils.getFailureCause(refundAlipayAPIResponse.getError()))
+                        .withErrorCode(refundAPIResponse.getError())
+                        .withFailureCause(ErrorUtils.getFailureCause(refundAPIResponse.getError()))
                         .build();
             }
 

@@ -2,7 +2,7 @@ package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
 import com.payline.payment.alipay.bean.request.SingleTradeQuery;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.APIResponse;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
@@ -126,7 +126,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .build();
 
             // call get API
-            AlipayAPIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
+            APIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
 
             // response should not be successful
             if("ILLEGAL_PARTNER".equalsIgnoreCase(response.getError()))

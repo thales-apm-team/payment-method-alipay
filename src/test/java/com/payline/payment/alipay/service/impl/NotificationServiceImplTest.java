@@ -2,7 +2,7 @@ package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.MockUtils;
 import com.payline.payment.alipay.bean.object.Trade;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.APIResponse;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
@@ -56,7 +56,7 @@ class NotificationServiceImplTest {
     void parse(Trade.TradeStatus status, Class clazz) {
         // Mock
         Mockito.doReturn(TRUE).when(client).notificationIsVerified(any(), any());
-        AlipayAPIResponse mockResponse = AlipayAPIResponse.fromXml(MockUtils.transactionBody(status));
+        APIResponse mockResponse = APIResponse.fromXml(MockUtils.transactionBody(status));
         Mockito.doReturn(mockResponse).when(client).getTransactionStatus(any(), any());
 
         // call method
@@ -93,7 +93,7 @@ class NotificationServiceImplTest {
                 "    <is_success>F</is_success>\n" +
                 "    <error>ERROR</error>\n" +
                 "</alipay>";
-        AlipayAPIResponse mockResponse = AlipayAPIResponse.fromXml(xml);
+        APIResponse mockResponse = APIResponse.fromXml(xml);
         Mockito.doReturn(mockResponse).when(client).getTransactionStatus(any(), any());
 
         // call method

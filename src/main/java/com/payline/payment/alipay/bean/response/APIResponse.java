@@ -11,7 +11,7 @@ import java.io.IOException;
 
 @JsonIgnoreProperties({ "request" })
 @JacksonXmlRootElement(namespace = "alipay", localName = "AlipayAPIResponse")
-public class AlipayAPIResponse {
+public class APIResponse {
 
     private String is_success;
     private Response response;
@@ -63,9 +63,9 @@ public class AlipayAPIResponse {
         this.error = error;
     }
 
-    public static AlipayAPIResponse fromXml(String xml) {
+    public static APIResponse fromXml(String xml) {
         try {
-            return xmlMapper.readValue(xml, AlipayAPIResponse.class);
+            return xmlMapper.readValue(xml, APIResponse.class);
         } catch (IOException e) {
             throw new InvalidDataException("Unable to parse XML AlipayAPIResponse", e);
         }

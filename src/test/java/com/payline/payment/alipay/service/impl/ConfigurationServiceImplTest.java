@@ -2,7 +2,7 @@ package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.MockUtils;
 import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.APIResponse;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.payment.alipay.utils.properties.ReleaseProperties;
@@ -153,7 +153,7 @@ class ConfigurationServiceImplTest {
                 "    <is_success>F</is_success>\n" +
                 "    <error>TRADE_NOT_EXIST</error>\n" +
                 "</alipay>";
-        AlipayAPIResponse mockResponse = AlipayAPIResponse.fromXml(xml);
+        APIResponse mockResponse = APIResponse.fromXml(xml);
         doReturn(mockResponse).when(httpClient).getTransactionStatus(any(RequestConfiguration.class), anyMap());
 
         // when: checking the configuration
@@ -197,7 +197,7 @@ class ConfigurationServiceImplTest {
                 "    <is_success>F</is_success>\n" +
                 "    <error>ILLEGAL_PARTNER</error>\n" +
                 "</alipay>";
-        AlipayAPIResponse mockResponse = AlipayAPIResponse.fromXml(xml);
+        APIResponse mockResponse = APIResponse.fromXml(xml);
         doReturn(mockResponse).when(httpClient).getTransactionStatus(any(RequestConfiguration.class), anyMap());
 
         // when: checking the configuration
@@ -221,7 +221,7 @@ class ConfigurationServiceImplTest {
                 "    <is_success>F</is_success>\n" +
                 "    <error>ILLEGAL_SIGN</error>\n" +
                 "</alipay>";
-        AlipayAPIResponse mockResponse = AlipayAPIResponse.fromXml(xml);
+        APIResponse mockResponse = APIResponse.fromXml(xml);
         doReturn(mockResponse).when(httpClient).getTransactionStatus(any(RequestConfiguration.class), anyMap());
 
         // when: checking the configuration

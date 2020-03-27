@@ -2,13 +2,10 @@ package com.payline.payment.alipay.utils;
 
 import com.google.gson.Gson;
 import com.payline.payment.alipay.bean.request.EndTransactionNotificationRequest;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
 import com.payline.payment.alipay.bean.response.NotificationMessage;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.pmapi.bean.notification.request.NotificationRequest;
-import com.payline.pmapi.bean.payment.response.PaymentResponse;
-import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import java.text.DateFormat;

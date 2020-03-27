@@ -1,12 +1,10 @@
 package com.payline.payment.alipay.service.impl;
 
 import com.payline.payment.alipay.MockUtils;
-import com.payline.payment.alipay.bean.configuration.RequestConfiguration;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.APIResponse;
 import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
-import com.payline.pmapi.bean.refund.request.RefundRequest;
 import com.payline.pmapi.bean.refund.response.RefundResponse;
 import com.payline.pmapi.bean.refund.response.impl.RefundResponseFailure;
 import com.payline.pmapi.bean.refund.response.impl.RefundResponseSuccess;
@@ -37,8 +35,8 @@ class RefundServiceImplTest {
                 "<alipay>\n" +
                 "    <is_success>T</is_success>\n" +
                 "</alipay>";
-        AlipayAPIResponse alipayAPIResponse = AlipayAPIResponse.fromXml(xmlOk);
-        Mockito.doReturn(alipayAPIResponse).when(client).getRefund(any(), any());
+        APIResponse APIResponse = APIResponse.fromXml(xmlOk);
+        Mockito.doReturn(APIResponse).when(client).getRefund(any(), any());
 
         RefundResponse response = service.refundRequest(MockUtils.aPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseSuccess.class, response.getClass());
@@ -57,8 +55,8 @@ class RefundServiceImplTest {
                 "    <sign>bXZsM4/TKsISBTHbiqgyQ6q8M30MNI+evD7JFg==</sign>\n" +
                 "    <sign_type>RSA2</sign_type>\n" +
                 "</alipay>";
-        AlipayAPIResponse alipayAPIResponse = AlipayAPIResponse.fromXml(xmlKo);
-        Mockito.doReturn(alipayAPIResponse).when(client).getRefund(any(), any());
+        APIResponse APIResponse = APIResponse.fromXml(xmlKo);
+        Mockito.doReturn(APIResponse).when(client).getRefund(any(), any());
 
         RefundResponse response = service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseFailure.class, response.getClass());

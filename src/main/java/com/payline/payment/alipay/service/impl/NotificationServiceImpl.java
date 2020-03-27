@@ -5,7 +5,7 @@ import com.payline.payment.alipay.bean.object.Trade;
 import com.payline.payment.alipay.bean.request.EndTransactionNotificationRequest;
 import com.payline.payment.alipay.bean.request.NotifyVerify;
 import com.payline.payment.alipay.bean.request.SingleTradeQuery;
-import com.payline.payment.alipay.bean.response.AlipayAPIResponse;
+import com.payline.payment.alipay.bean.response.APIResponse;
 import com.payline.payment.alipay.bean.response.NotificationMessage;
 import com.payline.payment.alipay.bean.response.NotifyResponse;
 import com.payline.payment.alipay.exception.PluginException;
@@ -159,7 +159,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
 
         // call get API
-        AlipayAPIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
+        APIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
         if (response.isSuccess()) {
             Trade transaction = response.getResponse().getTrade();
             Trade.TradeStatus status = transaction.getTrade_status();
