@@ -65,28 +65,6 @@ public class TestIT extends AbstractPaymentIntegration {
             //driver.findElement(By.id("J_newBtn")).click();
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".ui-form-explain")));
             driver.findElement(By.id("payPassword_rsainput")).sendKeys("b111111");
-            /*driver.findElement(By.id(".CardNumber")).sendKeys("4111111111111111");
-            driver.findElement(By.id(".ExpDate")).sendKeys("03/22");
-            driver.findElement(By.id(".CardCvv")).sendKeys("123");
-
-            // pour permettre de cocher la case
-            WebDriverWait wait = new WebDriverWait(driver, 30);
-            wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".cb-view--Mt8WQ")));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".cb-view--Mt8WQ")));
-
-            // Le champs Checkbox contient le champs texte et le champs bouton
-            // on le coche directement par le js sinon il essaye de cliquer pendant le scrolling de la page
-            // et atteint un autre element
-            JavascriptExecutor jse = (JavascriptExecutor)driver;
-            jse.executeScript("arguments[0].click();", driver.findElement(By.cssSelector(".cb-view--Mt8WQ")));
-
-            jse.executeScript("arguments[0].click();", driver.findElement(By.cssSelector(".button--2ctjk")));
-
-            wait.until(ExpectedConditions.urlContains("succes"));
-            // Wait for redirection to success or cancel url
-            // wait.until(ExpectedConditions.or(ExpectedConditions.urlToBe("https://example.org/store/redirection")));
-            /*
-             */
             return driver.getCurrentUrl();
 
         }

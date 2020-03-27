@@ -19,13 +19,19 @@ public class SignatureUtils {
     }
 
     /**
-     * ------------------------------------------------------------------------------------------------------------------
+     * Return SignatureUtils instance
+     * @return SignatureUtils
      */
     public static SignatureUtils getInstance() {
         return SignatureUtils.Holder.instance;
     }
 
-
+    /**
+     * Return a map with request parameters + signature and sign_type
+     * @param configuration
+     * @param params
+     * @return Map<String, String>
+     */
     public Map<String, String> getSignedParameters(RequestConfiguration configuration, Map<String, String> params) {
         // Create the RSA2 signature
         PrivateKey privateKey = getPrivateKey(configuration);
@@ -39,6 +45,12 @@ public class SignatureUtils {
         return params;
     }
 
+    /**
+     * Return true if signature is verified, else it returns no
+     * @param configuration
+     * @param map
+     * @return boolean
+     */
     public boolean getVerification(RequestConfiguration configuration, Map<String, String> map) {
         // extract data
         PublicKey publicKey = getPublicKey(configuration);
@@ -49,7 +61,11 @@ public class SignatureUtils {
         return verifySignature(publicKey, messageToCompare, signature);
     }
 
-
+    /**
+     * Convert map in String
+     * @param map
+     * @return String
+     */
     public String mapToString(Map<String, String> map) {
         return map.entrySet()
                 .stream()
@@ -114,6 +130,11 @@ public class SignatureUtils {
     }
 
 
+    /**
+     * Get public key using RequestConfiguration
+     * @param configuration
+     * @return PublicKey
+     */
     private PublicKey getPublicKey(RequestConfiguration configuration) {
         try {
             // check if privateKey exists in partnerConfiguration
@@ -140,6 +161,11 @@ public class SignatureUtils {
         }
     }
 
+    /**
+     * Get private key using RequestConfiguration
+     * @param configuration
+     * @return PrivateKey
+     */
     private PrivateKey getPrivateKey(RequestConfiguration configuration) {
         try {
             // check if privateKey exists in partnerConfiguration

@@ -153,7 +153,7 @@ public class HttpClient {
      * Manage get API call with signature
      *
      * @param requestConfiguration
-     * @return
+     * @return StringResponse
      */
     public StringResponse getWithSignature(RequestConfiguration requestConfiguration, Map<String, String> params) {
         try {
@@ -204,8 +204,7 @@ public class HttpClient {
             httpPost.setConfig(createHttpRequestConfig(requestConfiguration));
 
             // Execute request
-            StringResponse response = this.execute(httpPost);
-            return response;
+            return this.execute(httpPost);
 
         } catch (URISyntaxException | UnsupportedEncodingException e) {
             throw new InvalidDataException("Syntax Exception", e);
@@ -216,7 +215,7 @@ public class HttpClient {
      * Construct an URI url from a String given in PartnerConfiguration
      *
      * @param requestConfiguration Contain the String to convert
-     * @return
+     * @return {@link URI}
      */
     private URI constructURL(RequestConfiguration requestConfiguration) {
         // check if URL exists in partnerConfiguration
@@ -231,6 +230,12 @@ public class HttpClient {
             throw new InvalidDataException("Service URL is invalid", e);
         }
     }
+
+    /**
+     * Allow to create "time out" configuration for Http Request
+     * @param requestConfiguration
+     * @return {@link RequestConfig}
+     */
 
     private RequestConfig createHttpRequestConfig(RequestConfiguration requestConfiguration) {
         // Timeout
@@ -248,6 +253,11 @@ public class HttpClient {
     }
 
 
+    /**
+     * Convert Map to List<NameValuePair>
+     * @param map
+     * @return {@link List<NameValuePair>}
+     */
     private static List<NameValuePair> fromMap(Map<String, String> map) {
         List<NameValuePair> list = new ArrayList<>();
         for (Map.Entry<String, String> entry : map.entrySet()) {

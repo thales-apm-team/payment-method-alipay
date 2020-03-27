@@ -21,11 +21,23 @@ public class EndTransactionNotificationUtils {
     private static final String ert = "24";
 
 
+    /**
+     * Convert a EndTransactionNotificationRequest object to a JSON
+     * @param request
+     * @return {@link String}
+     */
     public static String toJson(EndTransactionNotificationRequest request) {
         Gson gson = new Gson();
         return gson.toJson(request);
     }
 
+    /**
+     * Create a EndTransactionNotificationRequest object from NotificationService
+     * @param notificationMessage
+     * @param request
+     * @param success
+     * @return {@link EndTransactionNotificationRequest}
+     */
     public static EndTransactionNotificationRequest createFromNotificationService(NotificationMessage notificationMessage, NotificationRequest request, boolean success) {
         String message = success ? "0236" : "0256";
         String tagTransactionType = "20";
@@ -35,16 +47,16 @@ public class EndTransactionNotificationUtils {
         String tagTransactionDate = dateFormatter.format(notificationMessage.getNotifyTime());
         String tagTransactionYear = yearFormatter.format(notificationMessage.getNotifyTime());
         String schemePaymentTime = fullFormatter.format(notificationMessage.getNotifyTime());
-        String tagAcqIdentifier = "";    // todo
+        String tagAcqIdentifier = "";
         String scheme = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.SCHEME);
         String schemeTransId = notificationMessage.getOutTradeNo();
-        String partnerTransId = "";   // todo
+        String partnerTransId = "";
         String partnerTransName = request.getContractConfiguration().getPaymentMethodIdentifier();
         String buyerId = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SUPPLIER).getValue();
-        String partnerId = ""; //todo
-        String merchantId = ""; // todo
+        String partnerId = "";
+        String merchantId = "";
         String mccCode = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY).getValue();
-        String storeId = ""; //todo
+        String storeId = "";
         String messageSenderId = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.MESSAGE_SENDER_ID);
 
         return EndTransactionNotificationRequest.Builder
@@ -73,7 +85,11 @@ public class EndTransactionNotificationUtils {
                 .build();
     }
 
-
+    /**
+     * Create a EndTransactionNotificationRequest object from RefundService
+     * @param request
+     * @return {@link EndTransactionNotificationRequest}
+     */
     public static EndTransactionNotificationRequest createFromRefundService(RefundRequest request) {
         String message = "0456";
         String tagTransactionType = "20";
