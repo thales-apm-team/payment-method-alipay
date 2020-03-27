@@ -36,7 +36,7 @@ public class SignatureUtils {
         params.put("sign", sha256withRsa);
         params.put("sign_type", "RSA2");
 
-        return PluginUtils.foo(params);
+        return params;
     }
 
     public boolean getVerification(RequestConfiguration configuration, Map<String, String> map) {

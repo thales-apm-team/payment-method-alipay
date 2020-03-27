@@ -63,12 +63,13 @@ public class PaymentServiceImpl implements PaymentService {
             // create the url to get
             Map<String, String> parameters = createForexTrade.getParametersList();
             Map<String, String> signedParameters = signatureUtils.getSignedParameters(configuration, parameters);
+            Map<String, String> encodedSignedParameters = PluginUtils.encode(signedParameters);
 
             // return a PaymentResponseRedirect
             PaymentResponseRedirect.RedirectionRequest redirectionRequest = PaymentResponseRedirect.RedirectionRequest.RedirectionRequestBuilder.aRedirectionRequest()
                     .withRequestType(PaymentResponseRedirect.RedirectionRequest.RequestType.POST)
                     .withUrl(new URL(paymentRequest.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.ALIPAY_URL)))
-                    .withPostFormData(signedParameters)
+                    .withPostFormData(encodedSignedParameters)
                     .build();
 
             paymentResponse = PaymentResponseRedirect.PaymentResponseRedirectBuilder.aPaymentResponseRedirect()

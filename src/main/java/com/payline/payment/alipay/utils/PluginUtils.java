@@ -159,7 +159,7 @@ public class PluginUtils {
     }
 
 
-    public static Map<String, String> foo(Map<String, String> params) {
+    public static Map<String, String> encode(Map<String, String> params) {
         try{
             //Create parameters list
             LinkedHashMap<String, String> parametersListForResponse = new LinkedHashMap<>();
