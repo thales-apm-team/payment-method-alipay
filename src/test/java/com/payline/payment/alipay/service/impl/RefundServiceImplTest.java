@@ -35,8 +35,8 @@ class RefundServiceImplTest {
                 "<alipay>\n" +
                 "    <is_success>T</is_success>\n" +
                 "</alipay>";
-        APIResponse APIResponse = APIResponse.fromXml(xmlOk);
-        Mockito.doReturn(APIResponse).when(client).getRefund(any(), any());
+        APIResponse apiResponse = APIResponse.fromXml(xmlOk);
+        Mockito.doReturn(apiResponse).when(client).getRefund(any(), any());
 
         RefundResponse response = service.refundRequest(MockUtils.aPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseSuccess.class, response.getClass());
@@ -55,8 +55,8 @@ class RefundServiceImplTest {
                 "    <sign>bXZsM4/TKsISBTHbiqgyQ6q8M30MNI+evD7JFg==</sign>\n" +
                 "    <sign_type>RSA2</sign_type>\n" +
                 "</alipay>";
-        APIResponse APIResponse = APIResponse.fromXml(xmlKo);
-        Mockito.doReturn(APIResponse).when(client).getRefund(any(), any());
+        APIResponse apiResponse = APIResponse.fromXml(xmlKo);
+        Mockito.doReturn(apiResponse).when(client).getRefund(any(), any());
 
         RefundResponse response = service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseFailure.class, response.getClass());
