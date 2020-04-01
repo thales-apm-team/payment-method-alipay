@@ -12,6 +12,7 @@ import com.payline.payment.alipay.exception.PluginException;
 import com.payline.payment.alipay.utils.EndTransactionNotificationUtils;
 import com.payline.payment.alipay.utils.PluginUtils;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
+import com.payline.payment.alipay.utils.constant.RequestContextKeys;
 import com.payline.payment.alipay.utils.http.HttpClient;
 import com.payline.pmapi.bean.common.FailureCause;
 import com.payline.pmapi.bean.common.OnHoldCause;
@@ -19,9 +20,10 @@ import com.payline.pmapi.bean.common.TransactionCorrelationId;
 import com.payline.pmapi.bean.notification.request.NotificationRequest;
 import com.payline.pmapi.bean.notification.response.NotificationResponse;
 import com.payline.pmapi.bean.notification.response.impl.PaymentResponseByNotificationResponse;
+import com.payline.pmapi.bean.payment.RequestContext;
 import com.payline.pmapi.bean.payment.request.NotifyTransactionStatusRequest;
 import com.payline.pmapi.bean.payment.response.PaymentResponse;
-import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.BuyerPaymentId;
+import com.payline.pmapi.bean.payment.response.buyerpaymentidentifier.impl.Email;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseFailure;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseOnHold;
 import com.payline.pmapi.bean.payment.response.impl.PaymentResponseSuccess;
@@ -29,6 +31,7 @@ import com.payline.pmapi.logger.LogManager;
 import com.payline.pmapi.service.NotificationService;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.payline.payment.alipay.bean.object.ForexService.notify_verify;
@@ -111,12 +114,10 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         // notify Monext
-        if (notificationMessage!= null){
-            boolean success = PaymentResponseSuccess.class.equals(paymentResponse.getClass());
-            EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.createFromNotificationService(notificationMessage, request, success);
-            client.sendNotificationMonext(configuration,endTransactionNotificationRequest);
+        if (notificationMessage != null) {
+            EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.createFromNotificationService(notificationMessage, request, paymentResponse);
+            client.sendNotificationMonext(configuration, endTransactionNotificationRequest);
         }
-
 
 
         // return the NotificationResponse
@@ -166,13 +167,21 @@ public class NotificationServiceImpl implements NotificationService {
 
             switch (status) {
                 case TRADE_FINISHED:
-                    BuyerPaymentId paymentId = PluginUtils.buildEmail(transaction.getBuyer_email());
+                    Email paymentId = PluginUtils.buildEmail(transaction.getBuyer_email());
+
+                    Map<String, String> data = new HashMap<>();
+                    data.put(RequestContextKeys.BUYER_ID, paymentId.getEmail());
+                    RequestContext context = RequestContext.RequestContextBuilder
+                            .aRequestContext()
+                            .withRequestData(data)
+                            .build();
 
                     paymentResponse = PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
                             .withPartnerTransactionId(transaction.getTrade_no())
                             .withStatusCode(status.name())
                             .withTransactionAdditionalData(transaction.getBuyer_id())
                             .withTransactionDetails(paymentId)
+                            .withRequestContext(context)
                             .build();
                     break;
                 case WAIT_BUYER_PAY:

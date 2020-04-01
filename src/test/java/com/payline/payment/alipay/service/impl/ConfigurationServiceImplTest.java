@@ -182,6 +182,8 @@ class ConfigurationServiceImplTest {
         assertTrue(errors.containsKey(ContractConfigurationKeys.SECONDARY_MERCHANT_NAME));
         assertTrue(errors.containsKey(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY));
         assertTrue(errors.containsKey(ContractConfigurationKeys.SUPPLIER));
+        assertTrue(errors.containsKey(ContractConfigurationKeys.MERCHANT_BANK));
+        assertTrue(errors.containsKey(ContractConfigurationKeys.MERCHANT_BANK_CODE));
     }
     /**
      * ------------------------------------------------------------------------------------------------------------------

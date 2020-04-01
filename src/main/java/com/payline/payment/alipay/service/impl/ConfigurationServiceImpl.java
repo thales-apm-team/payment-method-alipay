@@ -128,17 +128,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
         }
 
-        // check the length of some fields
-        if (accountInfo.get(ContractConfigurationKeys.MERCHANT_BANK).length()!=6){
-            errors.put(ContractConfigurationKeys.MERCHANT_BANK, i18n.getMessage("contract.MERCHANT_BANK.badLength", locale));
-        }
-        if (accountInfo.get(ContractConfigurationKeys.MERCHANT_BANK_CODE).length()!=5){
-            errors.put(ContractConfigurationKeys.MERCHANT_BANK, i18n.getMessage("contract.MERCHANT_BANK_CODE.badLength", locale));
-        }
-
         // If partner id is missing, no need to go further, as it is required
         if (!errors.isEmpty()) {
             return errors;
+        }
+
+        // check the length of some fields
+        if (accountInfo.get(ContractConfigurationKeys.MERCHANT_BANK).length() != 6) {
+            errors.put(ContractConfigurationKeys.MERCHANT_BANK, i18n.getMessage("contract.MERCHANT_BANK.badLength", locale));
+        }
+        if (accountInfo.get(ContractConfigurationKeys.MERCHANT_BANK_CODE).length() != 5) {
+            errors.put(ContractConfigurationKeys.MERCHANT_BANK, i18n.getMessage("contract.MERCHANT_BANK_CODE.badLength", locale));
         }
 
         try {
@@ -154,11 +154,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             APIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
 
             // response should not be successful
-            if("ILLEGAL_PARTNER".equalsIgnoreCase(response.getError()))
-            {
+            if ("ILLEGAL_PARTNER".equalsIgnoreCase(response.getError())) {
                 errors.put(ContractConfigurationKeys.MERCHANT_PID, response.getError());
-            }
-            else if (!"TRADE_NOT_EXIST".equalsIgnoreCase(response.getError())) {
+            } else if (!"TRADE_NOT_EXIST".equalsIgnoreCase(response.getError())) {
                 errors.put(GENERIC_ERROR, response.getError());
             }
         } catch (PluginException e) {

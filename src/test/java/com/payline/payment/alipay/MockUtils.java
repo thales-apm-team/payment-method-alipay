@@ -132,6 +132,7 @@ public class MockUtils {
         partnerConfigurationMap.put(PartnerConfigurationKeys.PUBLIC_KEY, "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvXgO/yLfPcJEgYy5EE7G4sXuzOQ4ki+5dFC2m/HBV5RUfAqoWWNF4ZXLc93C0IbnqRdPiX0C1cYne3cqQOY2NH6BiKEOVKyblI5loSobp5sfJszbIcvGcPmbTcOQsze1JR0at6sDeRarfyu4fwSCbVT6r39kVF/HVa1pGEuGU0XkTpfPCXZRFL50Xdm8+gRyRNgOw3BZfXggziWfg1P9RsLGfl/P2T9FUn+LXsBvY/i8EuNgyCia6Ht+Q/mXK0B2Svxauw/HZS4VvZbtNlOA0MD2oQBj363ytdXjgdaeZoDAD0b1FaQ+amwWjAVHvwW7lVkfKVZsCbBG3RHcT/YljwIDAQAB");
         partnerConfigurationMap.put(PartnerConfigurationKeys.SCHEME, "ALIPAY");
         partnerConfigurationMap.put(PartnerConfigurationKeys.MESSAGE_SENDER_ID, "Payline");
+        partnerConfigurationMap.put(PartnerConfigurationKeys.PARTNER_ID, "partnerId");
         Map<String, String> sensitiveConfigurationMap = new HashMap<>();
 
         return new PartnerConfiguration(partnerConfigurationMap, sensitiveConfigurationMap);
@@ -171,32 +172,11 @@ public class MockUtils {
         contractProperties.put(ContractConfigurationKeys.SECONDARY_MERCHANT_ID, new ContractProperty("1314520"));
         contractProperties.put(ContractConfigurationKeys.SECONDARY_MERCHANT_NAME, new ContractProperty("China Substation"));
         contractProperties.put(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY, new ContractProperty("5499"));
+        contractProperties.put(ContractConfigurationKeys.MERCHANT_BANK, new ContractProperty("123456"));
+        contractProperties.put(ContractConfigurationKeys.MERCHANT_BANK_CODE, new ContractProperty("12345"));
         return new ContractConfiguration("Alipay", contractProperties);
     }
-    /**
-     * Generate an invalid {@link ContractConfiguration} with invalid charset to generate an Encoding exception
-     */
-    public static ContractConfiguration aContractConfigurationUnsupportedEncodingException() {
 
-        Map<String, ContractProperty> contractProperties = new HashMap<>();
-        contractProperties.put(ContractConfigurationKeys.MERCHANT_PID, new ContractProperty("2088621926786355"));
-        return new ContractConfiguration("Alipay", contractProperties);
-    }
-    /**
-     * Generate a valid parameters to verify the connection to the API.
-     */
-    public static List aValidParametersList() {
-        // Create parameters
-        ArrayList<NameValuePair> params = new ArrayList<>();
-
-        params.add(new BasicNameValuePair("_input_charset", "UTF-8"));
-        params.add(new BasicNameValuePair("out_trade_no", "0"));
-        params.add(new BasicNameValuePair("partner", "2088621926786355"));
-        params.add(new BasicNameValuePair("service", "single_trade_query"));
-        params.add(new BasicNameValuePair("sign_type", "RSA2"));
-
-        return params;
-    }
 
     /**
      * Generate a valid {@link PaymentFormLogoRequest}.
