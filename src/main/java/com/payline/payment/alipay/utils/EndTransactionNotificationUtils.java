@@ -6,10 +6,12 @@ import com.payline.payment.alipay.bean.response.NotificationMessage;
 import com.payline.payment.alipay.utils.constant.ContractConfigurationKeys;
 import com.payline.payment.alipay.utils.constant.PartnerConfigurationKeys;
 import com.payline.pmapi.bean.notification.request.NotificationRequest;
+import com.payline.pmapi.bean.payment.ContractConfiguration;
 import com.payline.pmapi.bean.refund.request.RefundRequest;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class EndTransactionNotificationUtils {
     private static final DateFormat timeFormatter = new SimpleDateFormat("hhmmss");
@@ -21,23 +23,11 @@ public class EndTransactionNotificationUtils {
     private static final String ert = "24";
 
 
-    /**
-     * Convert a EndTransactionNotificationRequest object to a JSON
-     *
-     * @param request
-     * @return {@link String}
-     */
     public static String toJson(EndTransactionNotificationRequest request) {
         Gson gson = new Gson();
         return gson.toJson(request);
     }
 
-    /**
-     * Create a EndTransactionNotificationRequest object from NotificationService
-     *
-     * @param notificationMessage
-     * @param request*            @return {@link EndTransactionNotificationRequest}
-     */
     public static EndTransactionNotificationRequest createFromNotificationService(NotificationMessage notificationMessage, NotificationRequest request, boolean success) {
         String message = success ? "0236" : "0256";
         String tagTransactionType = "20";
@@ -47,18 +37,17 @@ public class EndTransactionNotificationUtils {
         String tagTransactionDate = dateFormatter.format(notificationMessage.getNotifyTime());
         String tagTransactionYear = yearFormatter.format(notificationMessage.getNotifyTime());
         String schemePaymentTime = fullFormatter.format(notificationMessage.getNotifyTime());
-        String tagAcqIdentifier = "";
+        String tagAcqIdentifier = createTagAcqIdentifier(request.getContractConfiguration());
         String scheme = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.SCHEME);
         String schemeTransId = notificationMessage.getOutTradeNo();
-        String partnerTransId = "";
+        String partnerTransId = createPartnerTransId();
         String partnerTransName = request.getContractConfiguration().getPaymentMethodIdentifier();
-        String buyerId = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SUPPLIER).getValue();
-        String partnerId = "";
-        String merchantId = "";
+        String buyerId = "";// todo
+        String partnerId = ""; //todo
+        String merchantId = ""; // todo secondaryMerchantID
         String mccCode = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY).getValue();
-        String storeId = "";
+        String storeId = ""; //todo secondaryMerchantName
         String messageSenderId = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.MESSAGE_SENDER_ID);
-        String partnerTransId = createPartnerTransId(storeId);
 
         return EndTransactionNotificationRequest.Builder
                 .anEndTransactionNotificationRequest()
@@ -86,34 +75,29 @@ public class EndTransactionNotificationUtils {
                 .build();
     }
 
-    /**
-     * Create a EndTransactionNotificationRequest object from RefundService
-     *
-     * @param request
-     * @return {@link EndTransactionNotificationRequest}
-     */
+
     public static EndTransactionNotificationRequest createFromRefundService(RefundRequest request) {
         String message = "0456";
         String tagTransactionType = "20";
         String tagAmountAuthorized = request.getAmount().getAmountInSmallestUnit().toString();
         String partnerCurrency = request.getAmount().getCurrency().getCurrencyCode();
 
+
         String tagTransactionTime = timeFormatter.format(request.getOrder().getDate());
         String tagTransactionDate = dateFormatter.format(request.getOrder().getDate());
         String tagTransactionYear = yearFormatter.format(request.getOrder().getDate());
         String schemePaymentTime = fullFormatter.format(request.getOrder().getDate());
-        String tagAcqIdentifier = "";
+        String tagAcqIdentifier = createTagAcqIdentifier(request.getContractConfiguration());
         String scheme = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.SCHEME);
         String schemeTransId = request.getTransactionId();
-        String partnerTransId = "";
+        String partnerTransId = createPartnerTransId();
         String partnerTransName = request.getContractConfiguration().getPaymentMethodIdentifier();
         String buyerId = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SUPPLIER).getValue();
-        String partnerId = "";
-        String merchantId = "";
+        String partnerId = ""; //todo
+        String merchantId = ""; // todo
         String mccCode = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY).getValue();
-        String storeId = "";
+        String storeId = ""; //todo
         String messageSenderId = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.MESSAGE_SENDER_ID);
-        String partnerTransId = createPartnerTransId(storeId);
 
         return EndTransactionNotificationRequest.Builder
                 .anEndTransactionNotificationRequest()
@@ -139,6 +123,18 @@ public class EndTransactionNotificationUtils {
                 .withStoreId(storeId)
                 .withMessageSenderId(messageSenderId)
                 .build();
+    }
+
+
+    private static String createTagAcqIdentifier(ContractConfiguration configuration){
+        return configuration.getProperty(ContractConfigurationKeys.MERCHANT_BANK).getValue()
+                + configuration.getProperty(ContractConfigurationKeys.MERCHANT_BANK_CODE).getValue();
+    }
+
+
+    private static String createPartnerTransId(){
+        return "StoreIDc" + fullFormatter.format(new Date());    // todo storeId + timestamp
+
     }
 
 

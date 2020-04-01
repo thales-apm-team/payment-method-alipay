@@ -89,6 +89,23 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         merchantUrl.setRequired(false);
         parameters.add(merchantUrl);
 
+        // merchant Bank
+        InputParameter merchantBank = new InputParameter();
+        merchantBank.setKey(ContractConfigurationKeys.MERCHANT_BANK);
+        merchantBank.setLabel(i18n.getMessage("contract.MERCHANT_BANK.label", locale));
+        merchantBank.setDescription(i18n.getMessage("contract.MERCHANT_BANK.description", locale));
+        merchantBank.setRequired(true);
+        parameters.add(merchantBank);
+
+        // merchant bank code
+        InputParameter merchantBankCode = new InputParameter();
+        merchantBankCode.setKey(ContractConfigurationKeys.MERCHANT_BANK_CODE);
+        merchantBankCode.setLabel(i18n.getMessage("contract.MERCHANT_BANK_CODE.label", locale));
+        merchantBankCode.setDescription(i18n.getMessage("contract.MERCHANT_BANK_CODE.description", locale));
+        merchantBankCode.setRequired(true);
+        parameters.add(merchantBankCode);
+
+
         return parameters;
     }
 
@@ -109,6 +126,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 String message = i18n.getMessage(I18N_CONTRACT_PREFIX + param.getKey() + ".requiredError", locale);
                 errors.put(param.getKey(), message);
             }
+        }
+
+        // check the length of some fields
+        if (accountInfo.get(ContractConfigurationKeys.MERCHANT_BANK).length()!=6){
+            errors.put(ContractConfigurationKeys.MERCHANT_BANK, i18n.getMessage("contract.MERCHANT_BANK.badLength", locale));
+        }
+        if (accountInfo.get(ContractConfigurationKeys.MERCHANT_BANK_CODE).length()!=5){
+            errors.put(ContractConfigurationKeys.MERCHANT_BANK, i18n.getMessage("contract.MERCHANT_BANK_CODE.badLength", locale));
         }
 
         // If partner id is missing, no need to go further, as it is required
