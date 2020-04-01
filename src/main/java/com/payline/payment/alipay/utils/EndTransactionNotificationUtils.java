@@ -23,6 +23,7 @@ public class EndTransactionNotificationUtils {
 
     /**
      * Convert a EndTransactionNotificationRequest object to a JSON
+     *
      * @param request
      * @return {@link String}
      */
@@ -33,10 +34,9 @@ public class EndTransactionNotificationUtils {
 
     /**
      * Create a EndTransactionNotificationRequest object from NotificationService
+     *
      * @param notificationMessage
-     * @param request
-     * @param success
-     * @return {@link EndTransactionNotificationRequest}
+     * @param request*            @return {@link EndTransactionNotificationRequest}
      */
     public static EndTransactionNotificationRequest createFromNotificationService(NotificationMessage notificationMessage, NotificationRequest request, boolean success) {
         String message = success ? "0236" : "0256";
@@ -58,6 +58,7 @@ public class EndTransactionNotificationUtils {
         String mccCode = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY).getValue();
         String storeId = "";
         String messageSenderId = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.MESSAGE_SENDER_ID);
+        String partnerTransId = createPartnerTransId(storeId);
 
         return EndTransactionNotificationRequest.Builder
                 .anEndTransactionNotificationRequest()
@@ -87,6 +88,7 @@ public class EndTransactionNotificationUtils {
 
     /**
      * Create a EndTransactionNotificationRequest object from RefundService
+     *
      * @param request
      * @return {@link EndTransactionNotificationRequest}
      */
@@ -95,7 +97,6 @@ public class EndTransactionNotificationUtils {
         String tagTransactionType = "20";
         String tagAmountAuthorized = request.getAmount().getAmountInSmallestUnit().toString();
         String partnerCurrency = request.getAmount().getCurrency().getCurrencyCode();
-
 
         String tagTransactionTime = timeFormatter.format(request.getOrder().getDate());
         String tagTransactionDate = dateFormatter.format(request.getOrder().getDate());
@@ -112,6 +113,7 @@ public class EndTransactionNotificationUtils {
         String mccCode = request.getContractConfiguration().getProperty(ContractConfigurationKeys.SECONDARY_MERCHANT_INDUSTRY).getValue();
         String storeId = "";
         String messageSenderId = request.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.MESSAGE_SENDER_ID);
+        String partnerTransId = createPartnerTransId(storeId);
 
         return EndTransactionNotificationRequest.Builder
                 .anEndTransactionNotificationRequest()
