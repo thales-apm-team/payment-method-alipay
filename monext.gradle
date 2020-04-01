@@ -1,14 +1,15 @@
+
 repositories {
     mavenLocal()
     maven {
-        url "https://nexus.intra.monext.fr:10130/nexus/content/groups/public"
+        url nexusGroupsUrl
         credentials {
             username mavenUser
             password mavenPassword
         }
     }
     maven {
-        url "https://nexus.intra.monext.fr:10130/nexus/content/repositories/jindus-repo-pay-pay-snapshot/"
+        url nexusSnapshotUrl
         credentials {
             username mavenUser
             password mavenPassword
@@ -23,16 +24,18 @@ publishing {
 
             // For release only
             if (!project.version.contains('-')) {
-                artifact testJar
+                afterEvaluate {
+                    artifact testJar
+                }
             }
         }
     }
     repositories {
         maven {
             if (project.version.endsWith('-SNAPSHOT')) {
-                url "https://nexus.intra.monext.fr:10130/nexus/content/repositories/jindus-repo-pay-pay-snapshot/"
+                url nexusSnapshotUrl
             } else {
-                url "https://nexus.intra.monext.fr:10130/nexus/content/repositories/jindus-repo-pay-pay-public/"
+                url nexusPublicUrl
             }
             credentials {
                 username mavenUser
@@ -48,4 +51,19 @@ sonarqube {
         property "sonar.dependencyCheck.reportPath", "${project.buildDir}/reports/dependency-check-report.xml"
         property 'sonar.dependencyCheck.htmlReportPath', "${project.buildDir}/reports/dependency-check-report.html"
     }
-} 
+}
+
+buildscript {
+    repositories {
+        maven {
+            url nexusGroupsUrl
+            credentials {
+                username mavenUser
+                password mavenPassword
+            }
+        }
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.1'
+    }
+}
