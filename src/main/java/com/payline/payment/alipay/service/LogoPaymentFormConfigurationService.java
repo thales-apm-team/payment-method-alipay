@@ -49,7 +49,9 @@ public abstract class LogoPaymentFormConfigurationService implements PaymentForm
                     .withAlt(i18n.getMessage("paymentMethod.name", locale) + " logo")
                     .build();
         } catch (NumberFormatException e) {
-            throw new PluginException("Plugin config error: logo height and width must be integers", e);
+            String errorMessage = "Plugin config error: logo height and width must be integers";
+            LOGGER.error(errorMessage, e);
+            throw new PluginException(errorMessage, e);
         }
     }
 
@@ -90,7 +92,9 @@ public abstract class LogoPaymentFormConfigurationService implements PaymentForm
                     .withContentType(contentType)
                     .build();
         } catch (IOException e) {
-            throw new PluginException("Plugin error: unable to read the logo", e);
+            String errorMessage = "Plugin error: unable to read the logo";
+            LOGGER.error("Plugin error: unable to read the logo", e);
+            throw new PluginException(errorMessage, e);
         }
     }
 

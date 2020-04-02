@@ -1,77 +1,88 @@
 package com.payline.payment.alipay.bean.request;
 
-import com.payline.payment.alipay.bean.object.ForexService;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ForexRefund extends Request {
-    private String currency;
-    private String gmt_return;
-    private String is_sync;
-    private String out_return_no;
-    private String product_code;
-    private String return_amount;
-    public static class ForexRefundBuilder
-    {
-        static ForexRefund forexRefund = new ForexRefund();
+    private final String currency;
+    private final String gmtReturn;
+    private final String isSync;
+    private final String outReturnNo;
+    private final String productCode;
+    private final String returnAmount;
+
+    private ForexRefund(ForexRefundBuilder builder) {
+        super(builder);
+        this.currency = builder.currency;
+        this.gmtReturn = builder.gmtReturn;
+        this.isSync = builder.isSync;
+        this.outReturnNo = builder.outReturnNo;
+        this.productCode = builder.productCode;
+        this.returnAmount = builder.returnAmount;
+    }
+
+    public static class ForexRefundBuilder extends RequestBuilder<ForexRefund.ForexRefundBuilder> {
+        private String currency;
+        private String gmtReturn;
+        private String isSync;
+        private String outReturnNo;
+        private String productCode;
+        private String returnAmount;
+
         public static ForexRefund.ForexRefundBuilder aForexRefund() {
             return new ForexRefund.ForexRefundBuilder();
         }
-        public ForexRefund.ForexRefundBuilder withOutTradeNo(String out_trade_no) {
-            this.build().out_trade_no = out_trade_no;
-            return this;
-        }
-        public ForexRefund.ForexRefundBuilder withPartner(String partner) {
-            this.build().partner = partner;
-            return this;
-        }
-        public ForexRefund.ForexRefundBuilder withService(ForexService service) {
-            this.build().service = service;
-            return this;
-        }
+
         public ForexRefund.ForexRefundBuilder withCurrency(String currency) {
-            this.build().currency = currency;
+            this.currency = currency;
             return this;
         }
-        public ForexRefund.ForexRefundBuilder withGmtReturn(String gmt_return) {
-            this.build().gmt_return = gmt_return;
+
+        public ForexRefund.ForexRefundBuilder withGmtReturn(String gmtReturn) {
+            this.gmtReturn = gmtReturn;
             return this;
         }
-        public ForexRefund.ForexRefundBuilder withIsSync(String is_sync) {
-            this.build().is_sync = is_sync;
+
+        public ForexRefund.ForexRefundBuilder withIsSync(String isSync) {
+            this.isSync = isSync;
             return this;
         }
-        public ForexRefund.ForexRefundBuilder withOutReturnNo(String out_return_no) {
-            this.build().out_return_no = out_return_no;
+
+        public ForexRefund.ForexRefundBuilder withOutReturnNo(String outReturnNo) {
+            this.outReturnNo = outReturnNo;
             return this;
         }
-        public ForexRefund.ForexRefundBuilder withProductCode(String product_code) {
-            this.build().product_code = product_code;
+
+        public ForexRefund.ForexRefundBuilder withProductCode(String productCode) {
+            this.productCode = productCode;
             return this;
         }
-        public ForexRefund.ForexRefundBuilder withReturnAmount(String return_amount) {
-            this.build().return_amount = return_amount;
+
+        public ForexRefund.ForexRefundBuilder withReturnAmount(String returnAmount) {
+            this.returnAmount = returnAmount;
             return this;
         }
+
         public ForexRefund build() {
-            return forexRefund;
+            return new ForexRefund(this);
         }
     }
 
     public Map<String, String> getParametersList() {
         //Create parameters list
-        Map<String, String>  params = new HashMap<>();
-        params.put("_input_charset", this._input_charset);
+        Map<String, String> params = new HashMap<>();
+        params.put("_input_charset", this.getInputCharset());
         params.put("currency", this.currency);
-        params.put("gmt_return", this.gmt_return);
-        params.put("is_sync", this.is_sync);
-        params.put("out_return_no", this.out_return_no);
-        params.put("out_trade_no", this.out_trade_no);
-        params.put("partner", this.partner);
-        params.put("product_code", this.product_code);
-        params.put("return_amount", this.return_amount);
-        params.put("service", this.service.name());
+        params.put("gmt_return", this.gmtReturn);
+        params.put("is_sync", this.isSync);
+        params.put("out_return_no", this.outReturnNo);
+        params.put("out_trade_no", this.getOutTradeNo());
+        params.put("partner", this.getPartner());
+        params.put("product_code", this.productCode);
+        params.put("return_amount", this.returnAmount);
+        params.put("service", this.getService().name());
         return params;
     }
 }

@@ -1,27 +1,27 @@
 package com.payline.payment.alipay.bean.request;
 
 public class EndTransactionNotificationRequest {
-    private String message;
-    private String tagTransactionType;
-    private String tagAmountAuthorized;
-    private String partnerCurrency;
-    private String tagTransactionTime;
-    private String tagTransactionDate;
-    private String tagTransactionYear;
-    private String schemePaymentTime;
-    private String trsPmtCtxCrdhldrPres;
-    private String tagAcqIdentifier;
-    private String ert;
-    private String scheme;
-    private String schemeTransId;
-    private String partnerTransId;
-    private String partnerTransName;
-    private String buyerId;
-    private String partnerId;
-    private String merchantId;
-    private String mccCode;
-    private String storeId;
-    private String messageSenderId;
+    private final String message;
+    private final String tagTransactionType;
+    private final String tagAmountAuthorized;
+    private final String partnerCurrency;
+    private final String tagTransactionTime;
+    private final String tagTransactionDate;
+    private final String tagTransactionYear;
+    private final String schemePaymentTime;
+    private final String trsPmtCtxCrdhldrPres;
+    private final String tagAcqIdentifier;
+    private final String ert;
+    private final String scheme;
+    private final String schemeTransId;
+    private final String partnerTransId;
+    private final String partnerTransName;
+    private final String buyerId;
+    private final String partnerId;
+    private final String merchantId;
+    private final String mccCode;
+    private final String storeId;
+    private final String messageSenderId;
 
     private EndTransactionNotificationRequest(Builder builder) {
         this.message = builder.message;

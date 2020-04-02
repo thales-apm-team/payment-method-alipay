@@ -34,8 +34,8 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.payline.payment.alipay.bean.object.ForexService.notify_verify;
-import static com.payline.payment.alipay.bean.object.ForexService.single_trade_query;
+import static com.payline.payment.alipay.bean.object.ForexService.NOTIFY_VERIFY;
+import static com.payline.payment.alipay.bean.object.ForexService.SINGLE_TRADE_QUERY;
 
 public class NotificationServiceImpl implements NotificationService {
     private static final Logger LOGGER = LogManager.getLogger(NotificationServiceImpl.class);
@@ -59,6 +59,7 @@ public class NotificationServiceImpl implements NotificationService {
             String notificationId = notificationMessage.getNotify_id();
 
             if (PluginUtils.isEmpty(transactionId)) {
+                // transactionId is set to unknown to create a valid TransactionCorrelationId at the end
                 transactionId = "UNKNOWN";
                 LOGGER.error("Bad content: {}", content);
                 throw new PluginException("No transactionId in notification content");
@@ -74,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .aNotifyVerify()
                     .withNotifyId(notificationId)
                     .withPartner(request.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue())
-                    .withService(notify_verify)
+                    .withService(NOTIFY_VERIFY)
                     .build();
 
             // call verify API
@@ -102,11 +103,13 @@ public class NotificationServiceImpl implements NotificationService {
                     break;
             }
         } catch (PluginException e) {
+            LOGGER.error(e.getErrorCode(), e);
             paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                     .withErrorCode(e.getErrorCode())
                     .withFailureCause(e.getFailureCause())
                     .build();
         } catch (RuntimeException e) {
+            LOGGER.error("Unexpected plugin error", e);
             paymentResponse = PaymentResponseFailure.PaymentResponseFailureBuilder.aPaymentResponseFailure()
                     .withErrorCode(PluginException.runtimeErrorCode(e))
                     .withFailureCause(FailureCause.INTERNAL_ERROR)
@@ -156,18 +159,18 @@ public class NotificationServiceImpl implements NotificationService {
                 .aSingleTradeQuery()
                 .withOutTradeNo(transactionId)
                 .withPartner(configuration.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue())
-                .withService(single_trade_query)
+                .withService(SINGLE_TRADE_QUERY)
                 .build();
 
         // call get API
         APIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
         if (response.isSuccess()) {
             Trade transaction = response.getResponse().getTrade();
-            Trade.TradeStatus status = transaction.getTrade_status();
+            Trade.TradeStatus status = transaction.getTradeStatus();
 
             switch (status) {
                 case TRADE_FINISHED:
-                    Email paymentId = PluginUtils.buildEmail(transaction.getBuyer_email());
+                    Email paymentId = PluginUtils.buildEmail(transaction.getBuyerEmail());
 
                     Map<String, String> data = new HashMap<>();
                     data.put(RequestContextKeys.BUYER_ID, paymentId.getEmail());
@@ -177,16 +180,16 @@ public class NotificationServiceImpl implements NotificationService {
                             .build();
 
                     paymentResponse = PaymentResponseSuccess.PaymentResponseSuccessBuilder.aPaymentResponseSuccess()
-                            .withPartnerTransactionId(transaction.getTrade_no())
+                            .withPartnerTransactionId(transaction.getTradeNo())
                             .withStatusCode(status.name())
-                            .withTransactionAdditionalData(transaction.getBuyer_id())
+                            .withTransactionAdditionalData(transaction.getBuyerId())
                             .withTransactionDetails(paymentId)
                             .withRequestContext(context)
                             .build();
                     break;
                 case WAIT_BUYER_PAY:
                     paymentResponse = PaymentResponseOnHold.PaymentResponseOnHoldBuilder.aPaymentResponseOnHold()
-                            .withPartnerTransactionId(transaction.getTrade_no())
+                            .withPartnerTransactionId(transaction.getTradeNo())
                             .withOnHoldCause(OnHoldCause.ASYNC_RETRY)
                             .build();
                     break;

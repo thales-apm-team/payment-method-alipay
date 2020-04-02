@@ -70,7 +70,6 @@ public class HttpClient {
         return Holder.instance;
     }
     // --- Singleton Holder pattern + initialization END
-    /**------------------------------------------------------------------------------------------------------------------*/
     /**
      * Send the request, with a retry system in case the client does not obtain a proper response from the server.
      *
@@ -105,7 +104,6 @@ public class HttpClient {
         LOGGER.info("Response obtained from partner API [{} {}]", strResponse.getStatusCode(), strResponse.getStatusMessage());
         return strResponse;
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
 
 
     /**
@@ -147,8 +145,6 @@ public class HttpClient {
         return APIResponse.fromXml(response.getContent());
     }
 
-    /**------------------------------------------------------------------------------------------------------------------*/
-
     /**
      * Manage get API call with signature
      *
@@ -183,7 +179,6 @@ public class HttpClient {
         }
     }
 
-    /**------------------------------------------------------------------------------------------------------------------*/
 
     /**
      * Send post request with notification data

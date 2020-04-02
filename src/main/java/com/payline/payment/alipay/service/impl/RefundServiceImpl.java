@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 
-import static com.payline.payment.alipay.bean.object.ForexService.forex_refund;
+import static com.payline.payment.alipay.bean.object.ForexService.FOREX_REFUND;
 
 public class RefundServiceImpl implements RefundService {
     private static final Logger LOGGER = LogManager.getLogger(RefundServiceImpl.class);
@@ -43,8 +43,8 @@ public class RefundServiceImpl implements RefundService {
                     .withOutTradeNo(refundRequest.getTransactionId())   // transaction Id
                     .withPartner(refundRequest.getContractConfiguration().getProperty(ContractConfigurationKeys.MERCHANT_PID).getValue())
                     .withProductCode("NEW_OVERSEAS_SELLER")
-                    .withReturnAmount(PluginUtils.createStringAmount( refundRequest.getAmount()))
-                    .withService(forex_refund)
+                    .withReturnAmount(PluginUtils.createStringAmount(refundRequest.getAmount()))
+                    .withService(FOREX_REFUND)
                     .build();
 
             // call refund API
@@ -60,7 +60,7 @@ public class RefundServiceImpl implements RefundService {
 
                 // notify Monext
                 EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.createFromRefundService(refundRequest);
-                client.sendNotificationMonext(configuration,endTransactionNotificationRequest);
+                client.sendNotificationMonext(configuration, endTransactionNotificationRequest);
 
             } else {
                 refundResponse = RefundResponseFailure.RefundResponseFailureBuilder.aRefundResponseFailure()
@@ -70,7 +70,7 @@ public class RefundServiceImpl implements RefundService {
             }
 
         } catch (PluginException e) {
-            LOGGER.error(e.getErrorCode());
+            LOGGER.error(e.getErrorCode(), e);
             refundResponse = e.toRefundResponseFailureBuilder().build();
 
         } catch (RuntimeException e) {

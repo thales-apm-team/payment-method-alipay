@@ -1,79 +1,79 @@
 package com.payline.payment.alipay.bean.object;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.util.Date;
 
 public class Trade {
-    public static XmlMapper xmlMapper = new XmlMapper();
 
-    private String buyer_email;
-    private String buyer_id;
+    @JacksonXmlProperty(localName = "buyer_email")
+    private String buyerEmail;
+
+    @JacksonXmlProperty(localName = "buyer_id")
+    private String buyerId;
+
     private String discount;
-    private String flag_trade_locked;
+
+    @JacksonXmlProperty(localName = "flag_trade_locked")
+    private String flagTradeLocked;
+
+    @JacksonXmlProperty(localName = "gmt_create")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date gmt_create;
+    private Date gmtCreate;
+
+    @JacksonXmlProperty(localName = "gmt_last_modified_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date gmt_last_modified_time;
+    private Date gmtLastModifiedTime;
+
+    @JacksonXmlProperty(localName = "gmt_payment")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date gmt_payment;
-    private String is_total_fee_adjust;
-    private String operator_role;
-    private String out_trade_no;
-    private String payment_type;
+    private Date gmtPayment;
+
+    @JacksonXmlProperty(localName = "is_total_fee_adjust")
+    private String isTotalFeeAdjust;
+
+    @JacksonXmlProperty(localName = "operator_role")
+    private String operatorRole;
+
+    @JacksonXmlProperty(localName = "out_trade_no")
+    private String outTradeNo;
+
+    @JacksonXmlProperty(localName = "payment_type")
+    private String paymentType;
+
     private String price;
+
     private String quantity;
-    private String seller_email;
-    private String seller_id;
+
+    @JacksonXmlProperty(localName = "seller_email")
+    private String sellerEmail;
+
+    @JacksonXmlProperty(localName = "seller_id")
+    private String sellerId;
+
     private String subject;
-    private String to_buyer_fee;
-    private String to_seller_fee;
-    private String total_fee;
-    private String trade_no;
 
-    public String getBuyer_email() {
-        return buyer_email;
-    }
+    @JacksonXmlProperty(localName = "to_buyer_fee")
+    private String toBuyerFee;
 
-    public String getBuyer_id() {
-        return buyer_id;
-    }
+    @JacksonXmlProperty(localName = "to_seller_fee")
+    private String toSellerFee;
+
+    @JacksonXmlProperty(localName = "total_fee")
+    private String totalFee;
+
+    @JacksonXmlProperty(localName = "trade_no")
+    private String tradeNo;
+
+    @JacksonXmlProperty(localName = "trade_status")
+    private TradeStatus tradeStatus;
+
+    @JacksonXmlProperty(localName = "use_coupon")
+    private String useCoupon;
 
     public String getDiscount() {
         return discount;
-    }
-
-    public String getFlag_trade_locked() {
-        return flag_trade_locked;
-    }
-
-    public Date getGmt_create() {
-        return gmt_create;
-    }
-
-    public Date getGmt_last_modified_time() {
-        return gmt_last_modified_time;
-    }
-
-    public Date getGmt_payment() {
-        return gmt_payment;
-    }
-
-    public String getIs_total_fee_adjust() {
-        return is_total_fee_adjust;
-    }
-
-    public String getOperator_role() {
-        return operator_role;
-    }
-
-    public String getOut_trade_no() {
-        return out_trade_no;
-    }
-
-    public String getPayment_type() {
-        return payment_type;
     }
 
     public String getPrice() {
@@ -84,44 +84,81 @@ public class Trade {
         return quantity;
     }
 
-    public String getSeller_email() {
-        return seller_email;
-    }
-
-    public String getSeller_id() {
-        return seller_id;
-    }
-
     public String getSubject() {
         return subject;
     }
 
-    public String getTo_buyer_fee() {
-        return to_buyer_fee;
+    public String getBuyerEmail() {
+        return buyerEmail;
     }
 
-    public String getTo_seller_fee() {
-        return to_seller_fee;
+    public String getBuyerId() {
+        return buyerId;
     }
 
-    public String getTotal_fee() {
-        return total_fee;
+    public String getFlagTradeLocked() {
+        return flagTradeLocked;
     }
 
-    public String getTrade_no() {
-        return trade_no;
+    public Date getGmtCreate() {
+        return gmtCreate;
     }
 
-    public TradeStatus getTrade_status() {
-        return trade_status;
+    public Date getGmtLastModifiedTime() {
+        return gmtLastModifiedTime;
     }
 
-    public String getUse_coupon() {
-        return use_coupon;
+    public Date getGmtPayment() {
+        return gmtPayment;
     }
 
-    private TradeStatus trade_status;
-    private String use_coupon;
+    public String getIsTotalFeeAdjust() {
+        return isTotalFeeAdjust;
+    }
+
+    public String getOperatorRole() {
+        return operatorRole;
+    }
+
+    public String getOutTradeNo() {
+        return outTradeNo;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public String getSellerEmail() {
+        return sellerEmail;
+    }
+
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public String getToBuyerFee() {
+        return toBuyerFee;
+    }
+
+    public String getToSellerFee() {
+        return toSellerFee;
+    }
+
+    public String getTotalFee() {
+        return totalFee;
+    }
+
+    public String getTradeNo() {
+        return tradeNo;
+    }
+
+    public TradeStatus getTradeStatus() {
+        return tradeStatus;
+    }
+
+    public String getUseCoupon() {
+        return useCoupon;
+    }
 
     public enum TradeStatus {
         TRADE_FINISHED, WAIT_BUYER_PAY, TRADE_CLOSED

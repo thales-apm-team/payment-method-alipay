@@ -343,7 +343,6 @@ public class MockUtils {
     public static Map<String, String> anAccountInfo() {
         return anAccountInfo(aContractConfiguration());
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
 
     /**
      * Generate a valid accountInfo, an attribute of a {@link ContractParametersCheckRequest} instance,

@@ -6,19 +6,17 @@ import com.payline.payment.alipay.bean.object.ForexService;
 import java.nio.charset.StandardCharsets;
 
 abstract class Request {
-    protected String _input_charset = StandardCharsets.UTF_8.toString();
-    protected String out_trade_no;
-    protected String partner;
-    protected ForexService service;
-    protected String sign_type = "RSA2";
-    protected String sign;
+    private final String inputCharset = StandardCharsets.UTF_8.toString();
+    private final String outTradeNo;
+    private final String partner;
+    private final ForexService service;
 
-    public String get_input_charset() {
-        return _input_charset;
+    public String getInputCharset() {
+        return inputCharset;
     }
 
-    public String getOut_trade_no() {
-        return out_trade_no;
+    public String getOutTradeNo() {
+        return outTradeNo;
     }
 
     public String getPartner() {
@@ -29,12 +27,32 @@ abstract class Request {
         return service;
     }
 
-    public String getSign_type() {
-        return sign_type;
+
+    Request(RequestBuilder<?> builder) {
+        this.outTradeNo = builder.outTradeNo;
+        this.partner = builder.partner;
+        this.service = builder.service;
     }
 
-    public String getSign() {
-        return sign;
+    public static class RequestBuilder<T extends RequestBuilder> {
+        private String outTradeNo;
+        private String partner;
+        private ForexService service;
+
+        public T withOutTradeNo(String outTradeNo) {
+            this.outTradeNo = outTradeNo;
+            return (T) this;
+        }
+
+        public T withPartner(String partner) {
+            this.partner = partner;
+            return (T) this;
+        }
+
+        public T withService(ForexService service) {
+            this.service = service;
+            return (T) this;
+        }
     }
 
     public String toString() {

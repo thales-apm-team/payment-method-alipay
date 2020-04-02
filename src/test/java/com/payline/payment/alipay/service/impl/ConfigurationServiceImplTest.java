@@ -107,7 +107,7 @@ class ConfigurationServiceImplTest {
             }
         }
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
+
     /**
      * Set of locales to test the getParameters() method. ZZ allows to search in the default messages.properties file.
      */
@@ -115,9 +115,6 @@ class ConfigurationServiceImplTest {
         return Stream.of(Locale.FRENCH, Locale.ENGLISH, new Locale("ZZ"));
     }
 
-    /**
-     * ------------------------------------------------------------------------------------------------------------------
-     */
     @Test
     void getReleaseInformation() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -233,20 +230,15 @@ class ConfigurationServiceImplTest {
         assertTrue(service.check(checkRequest).size() > 0);
     }
 
-    /**
-     * ------------------------------------------------------------------------------------------------------------------
-     */
+
     @Test
-    void check_invalidPrivateKey() throws IOException {
+    void check_invalidPrivateKey(){
         // given: a valid configuration, including client ID / secret
         ContractParametersCheckRequest checkRequest = MockUtils.aContractParametersCheckRequest();
-
-//        doThrow( PluginException.class ).when(httpClient).verifyConnection(any(RequestConfiguration.class));
 
         // when: checking the configuration
         assertTrue(service.check(checkRequest).size() > 0);
 
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
 
 }

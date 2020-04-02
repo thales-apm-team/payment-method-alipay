@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.payline.payment.alipay.bean.object.ForexService.single_trade_query;
+import static com.payline.payment.alipay.bean.object.ForexService.SINGLE_TRADE_QUERY;
 import static com.payline.pmapi.bean.configuration.request.ContractParametersCheckRequest.GENERIC_ERROR;
 
 public class ConfigurationServiceImpl implements ConfigurationService {
@@ -33,9 +33,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private ReleaseProperties releaseProperties = ReleaseProperties.getInstance();
     private HttpClient client = HttpClient.getInstance();
 
-    /**
-     * ------------------------------------------------------------------------------------------------------------------
-     */
     @Override
     public List<AbstractParameter> getParameters(Locale locale) {
         List<AbstractParameter> parameters = new ArrayList<>();
@@ -109,9 +106,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return parameters;
     }
 
-    /**
-     * ------------------------------------------------------------------------------------------------------------------
-     */
+
     @Override
     public Map<String, String> check(ContractParametersCheckRequest contractParametersCheckRequest) {
         RequestConfiguration configuration = RequestConfiguration.build(contractParametersCheckRequest);
@@ -147,7 +142,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .aSingleTradeQuery()
                     .withOutTradeNo("0")
                     .withPartner(accountInfo.get(ContractConfigurationKeys.MERCHANT_PID))
-                    .withService(single_trade_query)
+                    .withService(SINGLE_TRADE_QUERY)
                     .build();
 
             // call get API
@@ -167,9 +162,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return errors;
     }
 
-    /**
-     * ------------------------------------------------------------------------------------------------------------------
-     */
+
     @Override
     public ReleaseInformation getReleaseInformation() {
         String date = releaseProperties.get("release.date");
@@ -191,15 +184,10 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 .build();
     }
 
-    /**
-     * ------------------------------------------------------------------------------------------------------------------
-     */
     @Override
     public String getName(Locale locale) {
         return i18n.getMessage("paymentMethod.name", locale);
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
-
 
     /**
      * Create the list of MCC

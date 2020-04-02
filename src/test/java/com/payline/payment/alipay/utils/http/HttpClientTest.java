@@ -38,7 +38,7 @@ class HttpClientTest {
         httpClient = new HttpClient();
         MockitoAnnotations.initMocks(this);
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
+
     // --- Test SharegroopHttpClient#execute ---
     @Test
     void execute_nominal() throws IOException {
@@ -75,7 +75,6 @@ class HttpClientTest {
         // then: the client finally gets the response
         assertNotNull(stringResponse);
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
 
     @Test
     void execute_retryFail() throws IOException {
@@ -97,7 +96,6 @@ class HttpClientTest {
         // when: sending the request, a PluginException is thrown
         assertThrows(PluginException.class, () -> httpClient.execute(request));
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
 
     static PartnerConfiguration anInvalidPartnerConfiguration() {
         Map<String, String> partnerConfigurationMap = new HashMap<>();
@@ -108,7 +106,7 @@ class HttpClientTest {
 
         return new PartnerConfiguration(partnerConfigurationMap, sensitiveConfigurationMap);
     }
-    /**------------------------------------------------------------------------------------------------------------------*/
+
     // Test the single trade query API call
     @Test
     void verify_Single_Trade_Query() throws IOException {

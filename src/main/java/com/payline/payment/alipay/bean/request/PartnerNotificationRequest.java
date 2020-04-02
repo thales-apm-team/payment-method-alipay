@@ -34,6 +34,7 @@ public class PartnerNotificationRequest {
     private String storeName;
     private String messageSenderId;
     private String libelle;
+
     private PartnerNotificationRequest(Builder builder)
     {
         message = builder.message;
@@ -105,6 +106,7 @@ public class PartnerNotificationRequest {
         private String storeName;
         private String messageSenderId;
         private String libelle;
+
         public static PartnerNotificationRequest.Builder aPartnerNotificationRequest() {
             return new PartnerNotificationRequest.Builder();
         }

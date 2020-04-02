@@ -21,8 +21,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-import static com.payline.payment.alipay.bean.object.ForexService.create_forex_trade;
-import static com.payline.payment.alipay.bean.object.ForexService.create_forex_trade_wap;
+import static com.payline.payment.alipay.bean.object.ForexService.CREATE_FOREX_TRADE;
+import static com.payline.payment.alipay.bean.object.ForexService.CREATE_FOREX_TRADE_WAP;
 
 public class PaymentServiceImpl implements PaymentService {
     private static final Logger LOGGER = LogManager.getLogger(PaymentServiceImpl.class);
@@ -36,12 +36,11 @@ public class PaymentServiceImpl implements PaymentService {
             ForexService service;
             String product_code;
 
-
             if (PluginUtils.mobileUser(paymentRequest.getBrowser().getUserAgent())) {
-                service = create_forex_trade_wap;
+                service = CREATE_FOREX_TRADE_WAP;
                 product_code = "NEW_WAP_OVERSEAS_SELLER";
             } else {
-                service = create_forex_trade;
+                service = CREATE_FOREX_TRADE;
                 product_code = "NEW_OVERSEAS_SELLER";
             }
             // create createForexTrade request object
@@ -87,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
 
         } catch (PluginException e) {
-            LOGGER.error(e.getErrorCode());
+            LOGGER.error(e.getErrorCode(), e);
             paymentResponse = e.toPaymentResponseFailureBuilder().build();
 
         } catch (RuntimeException e) {

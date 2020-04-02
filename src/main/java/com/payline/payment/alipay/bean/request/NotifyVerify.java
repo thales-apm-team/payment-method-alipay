@@ -1,42 +1,55 @@
 package com.payline.payment.alipay.bean.request;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.payline.payment.alipay.bean.object.ForexService;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class NotifyVerify {
-    private String notify_id;
-    private String partner;
-    private ForexService service;
+    private final String notifyId;
+    private final String partner;
+    private final ForexService service;
 
-    public static class NotifyVerifyBuilder
-    {
-        static NotifyVerify notifyVerify = new NotifyVerify();
+    private NotifyVerify(NotifyVerifyBuilder builder) {
+        this.notifyId = builder.notifyId;
+        this.partner = builder.partner;
+        this.service = builder.service;
+    }
+
+    public static class NotifyVerifyBuilder {
+        private String notifyId;
+        private String partner;
+        private ForexService service;
+
         public static NotifyVerify.NotifyVerifyBuilder aNotifyVerify() {
             return new NotifyVerify.NotifyVerifyBuilder();
         }
-        public NotifyVerify.NotifyVerifyBuilder withNotifyId(String notify_id) {
-            this.build().notify_id = notify_id;
+
+        public NotifyVerify.NotifyVerifyBuilder withNotifyId(String notifyId) {
+            this.notifyId = notifyId;
             return this;
         }
+
         public NotifyVerify.NotifyVerifyBuilder withPartner(String partner) {
-            this.build().partner = partner;
+            this.partner = partner;
             return this;
         }
+
         public NotifyVerify.NotifyVerifyBuilder withService(ForexService service) {
-            this.build().service = service;
+            this.service = service;
             return this;
         }
+
         public NotifyVerify build() {
-            return notifyVerify;
+            return new NotifyVerify(this);
         }
     }
 
     public Map<String, String> getParametersList() {
         //Create parameters list
-        Map<String, String>  params = new HashMap<>();
-        params.put("notify_id", this.notify_id);
+        Map<String, String> params = new HashMap<>();
+        params.put("notify_id", this.notifyId);
         params.put("partner", this.partner);
         params.put("service", this.service.name());
         return params;
