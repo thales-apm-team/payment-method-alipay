@@ -59,7 +59,8 @@ public class RefundServiceImpl implements RefundService {
 
 
                 // notify Monext
-                EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.createFromRefundService(refundRequest);
+                EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.getInstance()
+                        .createFromRefundService(refundRequest);
                 client.sendNotificationMonext(configuration, endTransactionNotificationRequest);
 
             } else {

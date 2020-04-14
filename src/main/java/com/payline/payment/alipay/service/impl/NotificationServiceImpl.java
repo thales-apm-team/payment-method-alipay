@@ -118,7 +118,8 @@ public class NotificationServiceImpl implements NotificationService {
 
         // notify Monext
         if (notificationMessage != null) {
-            EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.createFromNotificationService(notificationMessage, request, paymentResponse);
+            EndTransactionNotificationRequest endTransactionNotificationRequest = EndTransactionNotificationUtils.getInstance()
+                    .createFromNotificationService(notificationMessage, request, paymentResponse);
             client.sendNotificationMonext(configuration, endTransactionNotificationRequest);
         }
 
