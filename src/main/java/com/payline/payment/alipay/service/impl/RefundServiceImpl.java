@@ -48,7 +48,7 @@ public class RefundServiceImpl implements RefundService {
                     .build();
 
             // call refund API
-            APIResponse refundAPIResponse = client.getRefund(configuration, forexRefund.getParametersList());
+            APIResponse refundAPIResponse = client.get(configuration, forexRefund.getParametersList());
 
             // check the response and return a RefundResponse
             if (refundAPIResponse.isSuccess()) {

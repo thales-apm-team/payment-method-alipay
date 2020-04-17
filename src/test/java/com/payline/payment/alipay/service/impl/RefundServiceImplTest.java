@@ -36,7 +36,7 @@ class RefundServiceImplTest {
                 "    <is_success>T</is_success>\n" +
                 "</alipay>";
         APIResponse apiResponse = APIResponse.fromXml(xmlOk);
-        Mockito.doReturn(apiResponse).when(client).getRefund(any(), any());
+        Mockito.doReturn(apiResponse).when(client).get(any(), any());
 
         RefundResponse response = service.refundRequest(MockUtils.aPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseSuccess.class, response.getClass());
@@ -56,7 +56,7 @@ class RefundServiceImplTest {
                 "    <sign_type>RSA2</sign_type>\n" +
                 "</alipay>";
         APIResponse apiResponse = APIResponse.fromXml(xmlKo);
-        Mockito.doReturn(apiResponse).when(client).getRefund(any(), any());
+        Mockito.doReturn(apiResponse).when(client).get(any(), any());
 
         RefundResponse response = service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseFailure.class, response.getClass());
@@ -69,7 +69,7 @@ class RefundServiceImplTest {
     @Test
     void refundRequestPluginException() {
         PluginException e = new PluginException("foo", FailureCause.REFUSED);
-        Mockito.doThrow(e).when(client).getRefund(any(), any());
+        Mockito.doThrow(e).when(client).get(any(), any());
 
         RefundResponse response = service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseFailure.class, response.getClass());
@@ -82,7 +82,7 @@ class RefundServiceImplTest {
     @Test
     void refundRequestRuntimeException() {
         NullPointerException e = new NullPointerException("foo");
-        Mockito.doThrow(e).when(client).getRefund(any(), any());
+        Mockito.doThrow(e).when(client).get(any(), any());
 
         RefundResponse response = service.refundRequest(MockUtils.anInvalidPaylineRefundRequest());
         Assertions.assertEquals(RefundResponseFailure.class, response.getClass());
