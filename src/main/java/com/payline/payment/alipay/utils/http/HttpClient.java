@@ -70,6 +70,7 @@ public class HttpClient {
         return Holder.instance;
     }
     // --- Singleton Holder pattern + initialization END
+
     /**
      * Send the request, with a retry system in case the client does not obtain a proper response from the server.
      *
@@ -84,7 +85,7 @@ public class HttpClient {
 
         while (strResponse == null && attempts <= retries) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Start call to partner API (attempt {}) :" + System.lineSeparator() + PluginUtils.requestToString(httpRequest), attempts);
+                LOGGER.debug("Start call to partner API (attempt {}) : {}{}", attempts, System.lineSeparator(), PluginUtils.requestToString(httpRequest));
             } else {
                 LOGGER.info("Start call to partner API [{} {}] (attempt {})", httpRequest.getMethod(), httpRequest.getURI(), attempts);
             }
@@ -120,12 +121,12 @@ public class HttpClient {
     }
 
     /**
-     * Build and send a request to get transaction status
+     * Build and send a GET request
      *
      * @param requestConfiguration
      * @return The response converted as a {@link APIResponse}.
      */
-    public APIResponse getTransactionStatus(RequestConfiguration requestConfiguration, Map<String, String> params) {
+    public APIResponse get(RequestConfiguration requestConfiguration, Map<String, String> params) {
         // Get the result of the request
         StringResponse response = getWithSignature(requestConfiguration, params);
         return APIResponse.fromXml(response.getContent());
@@ -169,7 +170,7 @@ public class HttpClient {
 
             // signature verification
             Map responseMap = PluginUtils.createMapFromString(response.getContent());
-            if (!signatureUtils.getVerification(requestConfiguration, responseMap)){
+            if (!signatureUtils.getVerification(requestConfiguration, responseMap)) {
                 throw new InvalidDataException("Received signature is not valid");
             }
             return response;
@@ -228,6 +229,7 @@ public class HttpClient {
 
     /**
      * Allow to create "time out" configuration for Http Request
+     *
      * @param requestConfiguration
      * @return {@link RequestConfig}
      */
@@ -237,7 +239,7 @@ public class HttpClient {
         final String readTimeout = requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.READ_TIMEOUT);
         final String connectTimeout = requestConfiguration.getPartnerConfiguration().getProperty(PartnerConfigurationKeys.CONNECT_TIMEOUT);
 
-        if (PluginUtils.isEmpty(readTimeout) | PluginUtils.isEmpty(connectTimeout)) {
+        if (PluginUtils.isEmpty(readTimeout) || PluginUtils.isEmpty(connectTimeout)) {
             throw new InvalidDataException("Missing timeout from partner configuration");
         }
 
@@ -250,6 +252,7 @@ public class HttpClient {
 
     /**
      * Convert Map to List<NameValuePair>
+     *
      * @param map
      * @return {@link List<NameValuePair>}
      */
