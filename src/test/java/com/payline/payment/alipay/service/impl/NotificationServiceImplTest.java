@@ -57,7 +57,7 @@ class NotificationServiceImplTest {
         // Mock
         Mockito.doReturn(TRUE).when(client).notificationIsVerified(any(), any());
         APIResponse mockResponse = APIResponse.fromXml(MockUtils.transactionBody(status));
-        Mockito.doReturn(mockResponse).when(client).getTransactionStatus(any(), any());
+        Mockito.doReturn(mockResponse).when(client).get(any(), any());
 
         // call method
         NotificationRequest request = MockUtils.aPaylineNotificationRequest(MockUtils.notificationBodyPaid);
@@ -94,7 +94,7 @@ class NotificationServiceImplTest {
                 "    <error>ERROR</error>\n" +
                 "</alipay>";
         APIResponse mockResponse = APIResponse.fromXml(xml);
-        Mockito.doReturn(mockResponse).when(client).getTransactionStatus(any(), any());
+        Mockito.doReturn(mockResponse).when(client).get(any(), any());
 
         // call method
         NotificationRequest request = MockUtils.aPaylineNotificationRequest(MockUtils.notificationBodyPaid);

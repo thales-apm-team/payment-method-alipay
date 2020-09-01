@@ -151,7 +151,7 @@ class ConfigurationServiceImplTest {
                 "    <error>TRADE_NOT_EXIST</error>\n" +
                 "</alipay>";
         APIResponse mockResponse = APIResponse.fromXml(xml);
-        doReturn(mockResponse).when(httpClient).getTransactionStatus(any(RequestConfiguration.class), anyMap());
+        doReturn(mockResponse).when(httpClient).get(any(RequestConfiguration.class), anyMap());
 
         // when: checking the configuration
         Map<String, String> errors = service.check(checkRequest);
@@ -197,7 +197,7 @@ class ConfigurationServiceImplTest {
                 "    <error>ILLEGAL_PARTNER</error>\n" +
                 "</alipay>";
         APIResponse mockResponse = APIResponse.fromXml(xml);
-        doReturn(mockResponse).when(httpClient).getTransactionStatus(any(RequestConfiguration.class), anyMap());
+        doReturn(mockResponse).when(httpClient).get(any(RequestConfiguration.class), anyMap());
 
         // when: checking the configuration
         Map<String, String> errors = service.check(checkRequest);
@@ -221,7 +221,7 @@ class ConfigurationServiceImplTest {
                 "    <error>ILLEGAL_SIGN</error>\n" +
                 "</alipay>";
         APIResponse mockResponse = APIResponse.fromXml(xml);
-        doReturn(mockResponse).when(httpClient).getTransactionStatus(any(RequestConfiguration.class), anyMap());
+        doReturn(mockResponse).when(httpClient).get(any(RequestConfiguration.class), anyMap());
 
         // when: checking the configuration
         Map<String, String> errors = service.check(checkRequest);
