@@ -15,12 +15,6 @@ apply plugin: 'jacoco'
 
 def externalFileName = "$projectDir/.external"
 
-if (file(externalFileName).exists()) {
-    apply from: "external.gradle"
-} else {
-    apply from: "monext.gradle"
-}
-
 description = 'payment-method-alipay'
 group = 'com.payline.payment.alipay'
 version = '1.1-SNAPSHOT'
@@ -29,6 +23,13 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 compileJava.options.encoding = 'UTF-8'
+
+
+if (file(externalFileName).exists()) {
+    apply from: "external.gradle"
+} else {
+    apply from: "monext.gradle"
+}
 
 ext {
     paymentMethodApiVersion = '1.9'
