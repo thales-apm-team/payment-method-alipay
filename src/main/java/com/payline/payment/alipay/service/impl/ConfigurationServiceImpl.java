@@ -146,7 +146,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     .build();
 
             // call get API
-            APIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
+            APIResponse response = client.get(configuration, singleTradeQuery.getParametersList());
 
             // response should not be successful
             if ("ILLEGAL_PARTNER".equalsIgnoreCase(response.getError())) {

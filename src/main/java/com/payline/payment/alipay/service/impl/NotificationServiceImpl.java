@@ -164,7 +164,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
 
         // call get API
-        APIResponse response = client.getTransactionStatus(configuration, singleTradeQuery.getParametersList());
+        APIResponse response = client.get(configuration, singleTradeQuery.getParametersList());
         if (response.isSuccess()) {
             Trade transaction = response.getResponse().getTrade();
             Trade.TradeStatus status = transaction.getTradeStatus();
